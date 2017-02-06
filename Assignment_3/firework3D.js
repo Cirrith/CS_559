@@ -63,6 +63,25 @@ function Firework(Context, DestX, DestY, DestZ, Speed, Radius, Color, Opacity) {
 }
 
 Firework.prototype.draw = function() {
+	if((this.curX != this.destX) && (this.curY != this.destY) && (this.curZ != this.destZ)) {
+		if(Math.abs(this.curX += this.dX) > Math.abs(this.destX)) {
+			this.curX = this.destX;
+		}
+		if(Math.abs(this.curY += this.dY) > Math.abs(this.destY)) {
+			this.curY = this.destY;
+		}
+		if(Math.abs(this.curZ += this.dZ) > Math.abs(this.destZ)) {
+			this.curZ = this.destZ;
+		}
+	} else if(this.stat < 100) {
+		for(var i=0; i<this.sparkLvls; i++) {
+			for(var j=0; j<this.sparkNum; j++) {
+				sparks[i][j].draw();
+			}
+		}
+	}
+	
+	
 	this.context.save();
 	this.context.fillStyle = this.color;
 	this.context.translate(this.curX, this.curY);  // Translate to current pos of fw

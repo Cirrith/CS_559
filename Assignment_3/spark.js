@@ -8,23 +8,18 @@ function Spark(CurX, CurY, CurZ, DX, DY, DZ, Radius, Color) {
 	this.curY = CurY || 0;
 	this.curZ = CurZ || 0;
 	
-	this.dX = DX || 1;
-	this.dy = DY || 1;
-	this.dZ = DZ || 1;
+	var rand = 0.4 * Math.random() + 0.8;
 	
-	/*
-	this.distance = Math.sqrt(Math.pow(this.destX-this.curX, 2) + Math.pow(this.destY-this.curY, 2) + Math.pow(this.destZ-this.curZ, 2));
-	
-	this.maxX = (this.curX / this.distance) * 1.2 * this.radius;  // Unit * max distance
-	this.maxY = (this.curY / this.distance) * 1.2 * this.radius;
-	this.maxZ = (this.curZ / this.distance) * 1.2 * this.radius;
-	
-	this.dX = (this.speed/100) * this.maxX * Math.random();  // % steps
-	this.dX = (this.speed/100) * this.maxY * Math.random();
-	this.dX = (this.speed/100) * this.maxZ * Math.random();
-	*/
+	this.dX = (DX || 1) * rand;
+	this.dy = (DY || 1) * rand;
+	this.dZ = (DZ || 1) * rand;
 }
 
 Spark.prototype.draw = function() {
+	this.curX += this.dX;
+	this.curY += this.dY;
+	this.curZ += this.dZ;
+	
+	// Draw
 	
 }
