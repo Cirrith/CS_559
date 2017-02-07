@@ -1,4 +1,4 @@
-function Firework(Context, DestX, DestY, DestZ, Speed, Radius, Color, Opacity) {
+function Firework(DestX, DestY, DestZ, Speed, Radius, Color, Opacity) {
 	// Basic Stuff
 	this.stat = 0;  // Status of explosion 0 - 100
 	this.speed = Speed || 5;
@@ -55,14 +55,15 @@ function Firework(Context, DestX, DestY, DestZ, Speed, Radius, Color, Opacity) {
 			
 			var radius = this.radius*0.5;  // Add Randomness
 			
-			sparks[i][j] = new Firework(curX, curY, curZ, dX, dY, dZ, radius, color);
+			this.sparks[i][j] = new Spark(curX, curY, curZ, dX, dY, dZ, radius, color);
 		}
 	}
-	
-	this.context = Context;
+	//this.cxt = CXT;
+	cxt.fillStyle = "blue";
 }
 
-Firework.prototype.draw = function() {
+Firework.prototype.draw = function(Tinit) {
+	//this.cxt.fillStyle = this.color;
 	if((this.curX != this.destX) && (this.curY != this.destY) && (this.curZ != this.destZ)) {
 		if(Math.abs(this.curX += this.dX) > Math.abs(this.destX)) {
 			this.curX = this.destX;
@@ -73,33 +74,16 @@ Firework.prototype.draw = function() {
 		if(Math.abs(this.curZ += this.dZ) > Math.abs(this.destZ)) {
 			this.curZ = this.destZ;
 		}
+		var Tcore = translateTx(this.curX,this.curY,this.curZ,Tinit);
+		arcTx(this.cxt,0,0,0,this.radius, 0, 2*Math.PI, Tcore);cxt.fill();
 	} else if(this.stat < 100) {
 		for(var i=0; i<this.sparkLvls; i++) {
 			for(var j=0; j<this.sparkNum; j++) {
 				sparks[i][j].draw();
 			}
 		}
+		stat+=this.speed;
 	}
-	
-	
-	this.context.save();
-	this.context.fillStyle = this.color;
-	this.context.translate(this.curX, this.curY);  // Translate to current pos of fw
-	if((this.curX != this.destX) && (this.curY != this.destY)) {  // Check if at explode state
-		if((this.curX += this.dX) > this.destX) {  // Ensure no overshoot and increment
-			this.curX = this.destX;
-		}
-		if((this.curY += this.dY) > this.destY) {  // Ensure no overshoot and increment
-			this.curY = this.destY;
-		}
-		this.context.beginPath();
-		this.context.arc(0,0, this.radius, 0, 2*Math.PI);
-		this.context.fill();
-	} else if(this.stat != 100) {
-		this.explode();
-		this.stat += this.speed;
-	}
-	this.context.restore();
 }
 
 Firework.prototype.explode = function() {

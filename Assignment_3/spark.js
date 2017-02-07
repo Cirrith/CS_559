@@ -21,5 +21,4 @@ Spark.prototype.draw = function() {
 	this.curZ += this.dZ;
 	
 	// Draw
-	
 }

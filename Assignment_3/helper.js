@@ -1,9 +1,8 @@
 	function drawAxes(cxt,Tx) {
 		// A little cross on the front face, for identification
-		moveToTx(0,0,0,Tx);lineToTx(100,0,0,Tx);cxt.stroke();
-		moveToTx(0,0,0,Tx);lineToTx(0,100,0,Tx);cxt.stroke();
-		moveToTx(0,0,0,Tx);lineToTx(0,0,100,Tx);cxt.stroke();
-		arcTx(100,100,0,25, 0, 2*Math.PI, Tx);cxt.fill();
+		moveToTx(cxt,0,0,0,Tx);lineToTx(cxt,100,0,0,Tx);cxt.stroke();
+		moveToTx(cxt,0,0,0,Tx);lineToTx(cxt,0,100,0,Tx);cxt.stroke();
+		moveToTx(cxt,0,0,0,Tx);lineToTx(cxt,0,0,100,Tx);cxt.stroke();
 	}
 
 	function moveToTx(cxt,x,y,z,Tx) {
@@ -21,6 +20,10 @@
 	function arcTx(cxt,x,y,z,radius,sAngle,eAngle,Tx) {
 		var loc = [x,y,z];
 		var locTx = m4.transformPoint(Tx, loc);
-		moveToTx(x,y,z,Tx)
+		moveToTx(cxt,x,y,z,Tx)
 		cxt.arc(locTx[0]+250,-locTx[1]+250,radius, sAngle, eAngle);
+	}
+	
+	function translateTx(x,y,z,Tx) {
+		return m4.translate(Tx,[x,y,z]);
 	}
