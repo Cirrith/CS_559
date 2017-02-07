@@ -2,6 +2,15 @@ var m4 = twgl.m4;
 var canvas;
 var cxt;
 
+var theta = 0;
+var dtheta = 0.01;
+var radius = 100;
+var eye = [radius*Math.cos(theta), radius*Math.sin(theta), 50];
+var target = [0, 0, 0];
+var up = [0, 0, 1];
+
+var Tcamera=m4.inverse(m4.lookAt(eye, target, up));
+
 function setup() {
 	canvas = document.getElementById("canvas");
 	cxt = canvas.getContext('2d');
@@ -37,20 +46,11 @@ function setup() {
 		var destX = loc.checked?Math.floor(500*Math.random()-250):null;
 		var destY = loc.checked?Math.floor(500*Math.random()-250):null;
 		var destZ = loc.checked?Math.floor(500*Math.random()-250):null;
-		var speed = spe.checked?Math.floor(Math.random()*8) + 2:null;
-		var radius = siz.checked?Math.floor(Math.random()*8) + 2:null;
+		var speed = spe.checked?Math.floor(Math.random()*5) + 2:null;
+		var radius = siz.checked?Math.floor(Math.random()*5) + 2:null;
 		var color = col.checked?rgb(Math.random()*255,Math.random()*255,Math.random()*255):null;
 		return new Firework(destX, destY, destZ, speed, radius, color);
 	}
-	
-	var theta = 0;
-	var dtheta = 0.01;
-	var radius = 100;
-	var eye = [radius*Math.cos(theta), radius*Math.sin(theta), 50];
-	var target = [0, 0, 0];
-	var up = [0, 0, 1];
-	
-	var Tcamera=m4.inverse(m4.lookAt(eye, target, up));
 	
 	generate();
 	requestAnimationFrame(update);

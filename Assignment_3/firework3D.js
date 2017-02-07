@@ -4,7 +4,7 @@ function Firework(DestX, DestY, DestZ, Speed, Radius, Color, Opacity) {
 	this.speed = Speed || 5;
 	this.color = Color || "blue";
 	this.radius = Radius || 5;
-	this.opacity = Opacity || 0.25;
+	this.opacity = Opacity || 0.0625;
 
 	// Movment Stuff
 	this.curX = 0;
@@ -80,8 +80,12 @@ Firework.prototype.draw = function(Tx) {
 			var x = this.curX - i*this.dX;
 			var y = this.curY - i*this.dY;
 			var z = this.curZ - i*this.dZ;
+			if((x==0) && (y==0) && (z==0))
+				break;
 			cxt.globalAlpha = 1-i*this.opacity;
-			circleTx(x,y,z,this.radius,Tcore);
+			eye = [radius*Math.cos(theta-i*dtheta), radius*Math.sin(theta-i*dtheta), 50]
+			var cam =m4.inverse(m4.lookAt(eye, target, up));
+			circleTx(x,y,z,this.radius*Math.exp(-i*0.125),cam);
 			i += 1;
 		}
 		cxt.globalAlpha = 1;
