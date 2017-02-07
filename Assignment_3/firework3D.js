@@ -19,8 +19,8 @@ function Firework(DestX, DestY, DestZ, Speed, Radius, Color, Opacity) {
 	this.dZ = this.destZ * this.speed / this.distance;
 	
 	// Spark Stuff
-	this.sparkNum =  25;  // SNumber of sparks per level
-	this.sparkLvls = 4;  // Number of levels of sparks
+	this.sparkNum =  20;  // SNumber of sparks per level
+	this.sparkLvls = 10;  // Number of levels of sparks
 	
 	this.sparks = [];  // First Index is level, second is spark
 	
@@ -53,15 +53,16 @@ function Firework(DestX, DestY, DestZ, Speed, Radius, Color, Opacity) {
 			var dY = (this.speed/100)*(destY - curY);
 			var dZ = (this.speed/100)*(destZ - curZ);
 			
-			var radius = this.radius*0.5;  // Add Randomness
+			var radius = this.radius*0.01;  // Add Randomness
 			
 			this.sparks[i][j] = new Spark(curX, curY, curZ, dX, dY, dZ, radius, color);
 		}
 	}
 }
 
-Firework.prototype.draw = function(Tinit) {
+Firework.prototype.draw = function(Tx) {
 	cxt.fillStyle = this.color;
+	cxt.beginPath();
 	if((this.curX != this.destX) && (this.curY != this.destY) && (this.curZ != this.destZ)) {
 		if(Math.abs(this.curX += this.dX) > Math.abs(this.destX)) {
 			this.curX = this.destX;
@@ -72,12 +73,14 @@ Firework.prototype.draw = function(Tinit) {
 		if(Math.abs(this.curZ += this.dZ) > Math.abs(this.destZ)) {
 			this.curZ = this.destZ;
 		}
-		var Tcore = translateTx(this.curX,this.curY,this.curZ,Tinit);
-		arcTx(0,0,0,this.radius, 0, 2*Math.PI, Tcore);cxt.fill();
+		var Tcore = translateTx(this.curX,this.curY,this.curZ,Tx);
+		circleTx(0,0,0,this.radius, Tcore);
+		cxt.fill();
 	} else if(this.stat < 100) {
+		var Tcore = translateTx(this.curX,this.curY,this.curZ,Tx);
 		for(var i=0; i<this.sparkLvls; i++) {
 			for(var j=0; j<this.sparkNum; j++) {
-				this.sparks[i][j].draw();
+				this.sparks[i][j].draw(Tcore);
 			}
 		}
 		this.stat+=this.speed;

@@ -11,14 +11,15 @@ function Spark(CurX, CurY, CurZ, DX, DY, DZ, Radius, Color) {
 	var rand = 0.4 * Math.random() + 0.8;
 	
 	this.dX = (DX || 1) * rand;
-	this.dy = (DY || 1) * rand;
+	this.dY = (DY || 1) * rand;
 	this.dZ = (DZ || 1) * rand;
 }
 
-Spark.prototype.draw = function() {
+Spark.prototype.draw = function(Tx) {
 	this.curX += this.dX;
 	this.curY += this.dY;
 	this.curZ += this.dZ;
 	
 	// Draw
+	circleTx(this.curX,this.curY,this.curZ,this.radius,Tx)
 }
