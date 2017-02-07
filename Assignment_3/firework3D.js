@@ -10,8 +10,8 @@ function Firework(DestX, DestY, DestZ, Speed, Radius, Color, Opacity) {
 	this.curX = 0;
 	this.curY = 0;
 	this.curZ = 0;
-	this.destX = DestX || 250;
-	this.destY = DestY || 250;
+	this.destX = DestX || 0;
+	this.destY = DestY || 0;
 	this.destZ = DestZ || 250;
 	this.distance = Math.sqrt(Math.pow(this.destX, 2) + Math.pow(this.destY, 2) + Math.pow(this.destZ, 2));
 	this.dX = this.destX * this.speed / this.distance;
@@ -32,8 +32,8 @@ function Firework(DestX, DestY, DestZ, Speed, Radius, Color, Opacity) {
 		
 		for(var j=0; j<this.sparkNum; j++) {
 			// Generate Cartesian Coordinates from RV
-			var theta = 2 * Math.PI * Math.random();
-			var phi = Math.acos(2*Math.random() - 1);
+			var theta = 2*Math.PI*Math.random();
+			var phi = Math.PI*Math.random();
 			var x = this.radius * Math.sin(theta)*Math.cos(phi);
 			var y = this.radius * Math.sin(theta)*Math.sin(phi);
 			var z = this.radius * Math.cos(theta);
@@ -63,7 +63,7 @@ function Firework(DestX, DestY, DestZ, Speed, Radius, Color, Opacity) {
 Firework.prototype.draw = function(Tx) {
 	cxt.fillStyle = this.color;
 	
-	if((this.curX != this.destX) && (this.curY != this.destY) && (this.curZ != this.destZ)) {
+	if((this.curX != this.destX) || (this.curY != this.destY) || (this.curZ != this.destZ)) {
 		if(Math.abs(this.curX += this.dX) > Math.abs(this.destX)) {
 			this.curX = this.destX;
 		}
