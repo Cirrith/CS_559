@@ -4,7 +4,7 @@ function Firework(DestX, DestY, DestZ, Speed, Radius, Color, Opacity) {
 	this.speed = Speed || 5;
 	this.color = Color || "blue";
 	this.radius = Radius || 5;
-	this.opacity = Opacity || 0;
+	this.opacity = Opacity || 0.25;
 
 	// Movment Stuff
 	this.curX = 0;
@@ -75,7 +75,16 @@ Firework.prototype.draw = function(Tx) {
 		}
 		var Tcore = translateTx(this.curX,this.curY,this.curZ,Tx);
 		circleTx(0,0,0,this.radius, Tcore);
-		//cxt.fill();
+		var i=1;
+		while(this.opacity*i < 1) {
+			var x = this.curX - i*this.dX;
+			var y = this.curY - i*this.dY;
+			var z = this.curZ - i*this.dZ;
+			cxt.globalAlpha = 1-i*this.opacity;
+			circleTx(x,y,z,this.radius,Tcore);
+			i += 1;
+		}
+		cxt.globalAlpha = 1;
 	} else if(this.stat < 100) {
 		var Tcore = translateTx(this.curX,this.curY,this.curZ,Tx);
 		for(var i=0; i<this.sparkLvls; i++) {
