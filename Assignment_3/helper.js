@@ -21,7 +21,9 @@
 		var loc = [x,y,z];
 		var locTx = m4.transformPoint(Tx, loc);
 		moveToTx(x,y,z,Tx);
+		//cxt.beginPath();
 		cxt.arc(locTx[0]+250,-locTx[1]+250,radius, 0, 2*Math.PI);
+		cxt.fill();
 	}
 	
 	function translateTx(x,y,z,Tx) {

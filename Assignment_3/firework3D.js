@@ -53,7 +53,7 @@ function Firework(DestX, DestY, DestZ, Speed, Radius, Color, Opacity) {
 			var dY = (this.speed/100)*(destY - curY);
 			var dZ = (this.speed/100)*(destZ - curZ);
 			
-			var radius = this.radius*0.01;  // Add Randomness
+			var radius = this.radius*0.1;  // Add Randomness
 			
 			this.sparks[i][j] = new Spark(curX, curY, curZ, dX, dY, dZ, radius, color);
 		}
@@ -62,7 +62,7 @@ function Firework(DestX, DestY, DestZ, Speed, Radius, Color, Opacity) {
 
 Firework.prototype.draw = function(Tx) {
 	cxt.fillStyle = this.color;
-	cxt.beginPath();
+	
 	if((this.curX != this.destX) && (this.curY != this.destY) && (this.curZ != this.destZ)) {
 		if(Math.abs(this.curX += this.dX) > Math.abs(this.destX)) {
 			this.curX = this.destX;
@@ -75,7 +75,7 @@ Firework.prototype.draw = function(Tx) {
 		}
 		var Tcore = translateTx(this.curX,this.curY,this.curZ,Tx);
 		circleTx(0,0,0,this.radius, Tcore);
-		cxt.fill();
+		//cxt.fill();
 	} else if(this.stat < 100) {
 		var Tcore = translateTx(this.curX,this.curY,this.curZ,Tx);
 		for(var i=0; i<this.sparkLvls; i++) {
@@ -84,15 +84,6 @@ Firework.prototype.draw = function(Tx) {
 			}
 		}
 		this.stat+=this.speed;
-	}
-}
-
-Firework.prototype.explode = function() {
-	// Draw sparks
-	for(var i=0; i<this.sparkLvls; i++) {
-		for(var j=0; j<this.sparkNum; j++) {
-			
-		}
 	}
 }
 

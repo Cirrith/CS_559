@@ -21,5 +21,6 @@ Spark.prototype.draw = function(Tx) {
 	this.curZ += this.dZ;
 	
 	// Draw
-	circleTx(this.curX,this.curY,this.curZ,this.radius,Tx)
+	cxt.fillStyle = this.color;
+	circleTx(this.curX,this.curY,this.curZ,this.radius,Tx);
 }
