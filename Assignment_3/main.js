@@ -62,7 +62,6 @@ function setup() {
 		Tcamera=m4.inverse(m4.lookAt(eye, target, up));
 		for(var i=0; i<works.length; i++) {
 			if(works[i].stat >= 100) {
-				//works[i] = new Firework(500*Math.random()-250, 500*Math.random()-250, 250*Math.random(), 2, 2, "blue");
 				works[i] = genFirework();
 			}
 			works[i].draw(Tcamera);
