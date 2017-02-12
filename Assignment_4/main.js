@@ -5,8 +5,8 @@ var cxt;
 
 var theta = 0;
 var dtheta = 0.01;
-var radius = 100;
-var eye = [radius*Math.cos(theta), radius*Math.sin(theta), 50];
+var radius = 1;
+var eye = [radius*Math.cos(theta), radius*Math.sin(theta), 100];
 var target = [0, 0, 0];
 var up = [0, 0, 1];
 
@@ -20,8 +20,8 @@ function init() {
 	var canvas = document.getElementById("canvas");
 	cxt = canvas.getContext('2d');
 	var paint = new Painter(canvas, cxt);
-	paint.addSquare("red", 0.5, m4.identity());
-	paint.addSquare("black", 1, m4.identity());
+	paint.addSquare("red", 1, Tcamera);
+	paint.draw(m4.identity());
 	window.requestAnimationFrame(update);
 }
 
