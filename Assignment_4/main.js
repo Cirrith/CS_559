@@ -11,7 +11,8 @@ var eye = [radius*Math.cos(theta), radius*Math.sin(theta), 150];
 var target = [0, 0, 0];
 var up = [0, 0, 1];
 
-var gridSize = 30;
+var gridSize = 50;
+var wire = true;
 
 var paint;
 
@@ -29,7 +30,7 @@ function init() {
 	cxt = canvas.getContext('2d');
 	paint = new Painter(canvas, cxt);
 	
-	scale = m4.scale(m4.identity(), [50, 50, 50]);
+	scale = m4.scale(m4.identity(), [25, 25, 25]);
 
 	for(var i=0; i<gridSize; i++) {
 		for(var j=0; j<gridSize; j++) {
@@ -37,18 +38,17 @@ function init() {
 			if(i%2 == j%2) {
 				paint.addSquare("black", 1, "Grid",Trans);
 			} else {
-				paint.addSquare("black", 1, "Grid",Trans);
+				paint.addSquare("black", 0.8, "Grid",Trans);
 			}
 		}
 	}
 	drawCube(10,0,1,"red");
-	drawCube(0,0,2,"blue");
+	drawCube(0,0,1,"blue");
 	window.requestAnimationFrame(update);
 }
 
 function drawCube(x,y,z,color) {
-	var Base = m4.translate(scale, [x,y,z]);
-	var Top = m4.translate(Base, [0,0,z]);
+	var Top = m4.translate(scale, [x,y,z]);
 	paint.addSquare(color,1,"Box",Top);
 	var Near = m4.rotateX(Top,-Math.PI/2);
 	paint.addSquare(color,1,"Box",Near);
@@ -63,12 +63,10 @@ function drawCube(x,y,z,color) {
 function update() {
 	"use strict";
 	cxt.clearRect(0,0,canvas.width,canvas.height);
-	cxt.fillStyle="white";
-	cxt.fillRect(0,0,canvas.width,canvas.height);
 	theta += dtheta;
 	eye = [radius*Math.cos(theta), radius*Math.sin(theta), 20];
 	Tcamera=m4.inverse(m4.lookAt(eye, target, up));
-	paint.draw(Tcamera);
+	paint.draw(Tcamera, wire);
 	
 	count++;
 	if(count == 60) {

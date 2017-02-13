@@ -32,11 +32,16 @@ Painter.prototype.addSquare = function(Color,Opacity,Purpose,Tx) {
 	this.squares.push(obj);
 }
 
-Painter.prototype.draw = function(Tcamera) {
+Painter.prototype.draw = function(Tcamera, Wire) {
 	var Tndc = m4.frustum(this.canvas.width/2, this.canvas.width/2, this.canvas.height/2, this.canvas.height/2, -10, -50);
-	this.squares.sort(compare);
-	this.cxt.strokeStyle="white";
-	this.cxt.lineWidth=1;
+	//this.squares.sort(compare);
+	if(Wire) {
+		this.cxt.strokeStyle="black";
+		this.cxt.lineWidth=1;
+	} else {
+		this.cxt.strokeStyle="white";
+		this.cxt.lineWidth=1;
+	}
 	for(var i=0; i<this.squares.length; i++) {  // List is sorted, Painters algorithm
 		this.cxt.fillStyle=this.squares[i].color;
 		this.cxt.globalAlpha = this.squares[i].opacity;
@@ -53,7 +58,10 @@ Painter.prototype.draw = function(Tcamera) {
 		this.cxt.lineTo(v4[0] + xPlus, -v4[1] + yPlus);
 		this.cxt.closePath();
 		this.cxt.stroke();
-		this.cxt.fill();
+		if(!Wire) {			
+			this.cxt.fill();
+		}
+		
 	}
 }
 
