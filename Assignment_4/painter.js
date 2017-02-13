@@ -16,7 +16,7 @@ function Painter(Canvas, Cxt) {
 	this.cxt = Cxt || Canvas.getContext('2d');
 }
 
-Painter.prototype.addSquare = function(Color,Opacity,Tx) {
+Painter.prototype.addSquare = function(Color,Opacity,Purpose,Tx) {
 	var obj = {};
 	
 	obj.v1 = m4.transformPoint(Tx, squareVerts[0]);
@@ -25,21 +25,19 @@ Painter.prototype.addSquare = function(Color,Opacity,Tx) {
 	obj.v4 = m4.transformPoint(Tx, squareVerts[3]);
 	obj.center = m4.transformPoint(Tx, squareVerts[4]);
 	
-	//for(var i=0; i<squareVerts.length; i++) {
-	//	obj.verts[i] = m4.transformPoint(Tx, squareVerts[i]);
-	//}
-	
 	obj.color = Color || "blue";
 	obj.opacity = Opacity || 1;
+	obj.purpose = Purpose;
 	
 	this.squares.push(obj);
 }
 
 Painter.prototype.draw = function(Tcamera) {
-	//Tndc = m4.frustum(this.canvas.width/2, this.canvas.width/2, this.canvas.height/2, this.canvas.height/2, -10, -50);
-	//this.squares.sort(compare);
+	var Tndc = m4.frustum(this.canvas.width/2, this.canvas.width/2, this.canvas.height/2, this.canvas.height/2, -10, -50);
+	this.squares.sort(compare);
+	this.cxt.strokeStyle="white";
+	this.cxt.lineWidth=1;
 	for(var i=0; i<this.squares.length; i++) {  // List is sorted, Painters algorithm
-		console.log(i);
 		this.cxt.fillStyle=this.squares[i].color;
 		this.cxt.globalAlpha = this.squares[i].opacity;
 		this.cxt.beginPath();
@@ -47,11 +45,14 @@ Painter.prototype.draw = function(Tcamera) {
 		var v2 = m4.transformPoint(Tcamera, this.squares[i].v2);
 		var v3 = m4.transformPoint(Tcamera, this.squares[i].v3);
 		var v4 = m4.transformPoint(Tcamera, this.squares[i].v4);
-		this.cxt.moveTo(v1[0] + 250, -v1[1] + 250);
-		this.cxt.lineTo(v2[0] + 250, -v2[1] + 250);
-		this.cxt.lineTo(v3[0] + 250, -v3[1] + 250);
-		this.cxt.lineTo(v4[0] + 250, -v4[1] + 250);
+		var xPlus = this.canvas.width/2;
+		var yPlus = this.canvas.height/2;
+		this.cxt.moveTo(v1[0] + xPlus, -v1[1] + yPlus);
+		this.cxt.lineTo(v2[0] + xPlus, -v2[1] + yPlus);
+		this.cxt.lineTo(v3[0] + xPlus, -v3[1] + yPlus);
+		this.cxt.lineTo(v4[0] + xPlus, -v4[1] + yPlus);
 		this.cxt.closePath();
+		this.cxt.stroke();
 		this.cxt.fill();
 	}
 }
