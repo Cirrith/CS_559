@@ -11,6 +11,8 @@ var eye = [radius*Math.cos(theta), radius*Math.sin(theta), 50];
 var target = [0, 0, 0];
 var up = [0, 0, 1];
 
+var gridSize = 10;
+
 var paint;
 
 // Transform from world to camera
@@ -23,9 +25,20 @@ function init() {
 	canvas = document.getElementById("canvas");
 	cxt = canvas.getContext('2d');
 	paint = new Painter(canvas, cxt);
-	paint.addSquare("black", 1, m4.identity());
-	var Ttrans = m4.translate(m4.identity(), [50,0,0]);
-	paint.addSquare("black", 0.6, Ttrans);
+	
+	var scale = m4.scale(m4.identity(), [50, 50, 50]);
+	
+	
+	for(var i=0; i<gridSize; i++) {
+		for(var j=0; j<gridSize; j++) {
+			var Trans = m4.translate(scale, [i-gridSize/2, j-gridSize/2,0]);
+			if(i%2 == j%2) {
+				paint.addSquare("black", 1, Trans);
+			} else {
+				paint.addSquare("black", 0.6, Trans);
+			}
+		}
+	}
 	window.requestAnimationFrame(update);
 }
 
@@ -35,7 +48,7 @@ function update() {
 	cxt.fillStyle="white";
 	cxt.fillRect(0,0,canvas.width,canvas.height);
 	theta += dtheta;
-	eye = [radius*Math.cos(theta), radius*Math.sin(theta), 50];
+	eye = [radius*Math.cos(theta), radius*Math.sin(theta), 20];
 	Tcamera=m4.inverse(m4.lookAt(eye, target, up));
 	paint.draw(Tcamera);
 	window.requestAnimationFrame(update);
