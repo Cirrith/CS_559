@@ -61,7 +61,10 @@ Painter.prototype.draw = function(Tcamera, Wire) {
 		if(!Wire) {			
 			this.cxt.fill();
 		}
-		
 	}
+}
+
+Painter.prototype.clear = function() {
+	this.squares = [];
 }
 
