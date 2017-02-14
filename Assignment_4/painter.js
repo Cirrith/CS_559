@@ -1,6 +1,6 @@
 "use strict";
 
-var squareVerts = [[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0.5,0.5,0]];
+var squareVerts = [[0,0,0],[25,0,0],[25,25,0],[0,25,0],[0.5,0.5,0]];
 
 // Compare function for painters algorithm sort
 function compare(a, b) {
@@ -33,8 +33,6 @@ Painter.prototype.addSquare = function(Color,Opacity,Purpose,Tx) {
 }
 
 Painter.prototype.draw = function(Tcamera, Wire) {
-	var Tndc = m4.frustum(this.canvas.width/2, this.canvas.width/2, this.canvas.height/2, this.canvas.height/2, -10, -50);
-	//this.squares.sort(compare);
 	if(Wire) {
 		this.cxt.strokeStyle="black";
 		this.cxt.lineWidth=1;

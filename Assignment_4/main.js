@@ -3,25 +3,23 @@
 var m4 = twgl.m4;
 var canvas;
 var cxt;
+var paint;
 
 var theta = 0;
 var dtheta = 0.01;
 var radius = 100;
-var eye = [radius*Math.cos(theta), radius*Math.sin(theta), 150];
-var target = [0, 0, 0];
-var up = [0, 0, 1];
+var eyeHeight = 100;
+var target = [0,0,0];
+var up = [0,0,1];
 
 var gridSize = 50;
 var wire = false;
 
-var paint;
-
 // Transform from world to camera
-var Tcamera=m4.inverse(m4.lookAt(eye, target, up));
-var scale;
-
-window.onload=init;
-
+var Tscale = m4.scale(m4.identity(), [50, 50, 50]);
+var Tproj = m4.perspective(Math.PI/2, 1, 5, 400);
+var Tview = m4.multiply(m4.scaling([canvas.width/2,-canvas.height/2,1]), m4.translation([canvas.width/2,canvas.height/2,0]));
+var Tvp = m4.multiply(Tproj, Tview);
 var count = 0;
 
 function init() {
@@ -30,7 +28,7 @@ function init() {
 	cxt = canvas.getContext('2d');
 	paint = new Painter(canvas, cxt);
 	
-	scale = m4.scale(m4.identity(), [50, 50, 50]);
+	
 
 	window.requestAnimationFrame(update);
 }
@@ -50,42 +48,27 @@ function drawCube(x,y,z,color,Tx) {
 
 function update() {
 	"use strict";
-	cxt.clearRect(0,0,canvas.width,canvas.height);
-	theta += dtheta;
-	eye = [radius*Math.cos(theta), radius*Math.sin(theta), 20];
-	Tcamera=m4.inverse(m4.lookAt(eye, target, up));
-	
-	var projM = m4.perspective(Math.PI/2, 1, 0.1, 100);
-	
-		var viewport = m4.scaling([xsize/2,-ysize/2,1]);
-		m4.setTranslation(viewport,[xsize/2,ysize/2,0],viewport);
+	cxt.clearRect(0,0,canvas.width,canvas.height);  // Clean Canvas
+	theta += dtheta;  // Increment rotation
 
-		// get the projection
-		var projM;
-		if (mySliders.perspective.value > 0) {
-			var fov = toRadians(mySliders.fov.value);
-			projM = m4.perspective(fov, 1, 0.1, 100);
-		} else {
-			projM = m4.scaling([.1,.1,1]);
-		}
-		// don't forget... lookat give the CAMERA matrix, not the view matrix
-		var lookAtPt = [mySliders.lookAtX.value, mySliders.lookAtY.value, mySliders.lookAtZ.value];
-		var lookFromPt = [mySliders.lookFromX.value, mySliders.lookFromY.value, mySliders.lookFromZ.value];
-		var lookatI = m4.lookAt(lookFromPt, lookAtPt, [0,1,0]);
-		var lookatM = m4.inverse(lookatI);
-
-		// the whole transform
-        var viewii = m4.multiply(ab.getMatrix(),lookatM);
-		var viewi = m4.multiply(viewii,projM);
-		var view = m4.multiply(viewi,viewport);
+	var eye = [radius*Math.cos(theta), radius*Math.sin(theta), eyeHeight];
+	var Tcamera=m4.inverse(m4.lookAt(eye, target, up));
 	
 	
-	var Tinter = m4.multiply(Tcamera, scale);
+	
+	//var Tndc = m4.frustum(canvas.width/2, canvas.width/2, this.canvas.height/2, this.canvas.height/2, -10, -50);
+	var Tvp = m4.scaling([canvas.width/2,-canvas.height/2,1]);
+	Tvp = m4.setTranslation(Tvp,[canvas.width/2,canvas.height/2,0]);
+	
+	// Transform for Scale -> Tcamera -> Tndc -> Tvp
+	var Tviewii = m4.multiply(m4.identity(),Tcamera);
+	var Tviewi = m4.multiply(Tviewii,Tndc);
+	var Tview = m4.multiply(Tviewi,Tvp);
 	
 	for(var i=0; i<gridSize; i++) {
 		for(var j=0; j<gridSize; j++) {
 			var Trans = m4.translate(m4.identity(), [i-gridSize/2, j-gridSize/2,0]);
-			var Tnew = m4.multiply(Trans, Tinter);
+			var Tnew = m4.multiply(Trans, Tview);
 			if(i%2 == j%2) {
 				paint.addSquare("black", 1, "Grid",Tnew);
 			} else {
@@ -93,8 +76,8 @@ function update() {
 			}
 		}
 	}
-	drawCube(10,0,1,"red", Tcamera);
-	drawCube(0,0,1,"blue", Tcamera);
+	//drawCube(10,0,1,"red", Tview);
+	//drawCube(0,0,1,"blue", Tview);
 	
 	paint.draw(m4.identity(), wire);
 	
@@ -107,4 +90,6 @@ function update() {
 	}
 	window.requestAnimationFrame(update);
 }
+
+window.onload=init;
 
