@@ -8,7 +8,7 @@ var paint;
 var theta = 0;
 var dtheta = 0.01;
 var radius = 100;
-var eyeHeight = 100;
+var eyeHeight = 20;
 var target = [0,0,0];
 var up = [0,0,1];
 
@@ -16,10 +16,11 @@ var gridSize = 50;
 var wire = false;
 
 // Transform from world to camera
-var Tscale = m4.scale(m4.identity(), [50, 50, 50]);
-var Tproj = m4.perspective(Math.PI/2, 1, 5, 400);
-var Tview = m4.multiply(m4.scaling([canvas.width/2,-canvas.height/2,1]), m4.translation([canvas.width/2,canvas.height/2,0]));
-var Tvp = m4.multiply(Tproj, Tview);
+var Tscale;
+var Tproj;
+var Tview;
+var Tlate;
+
 var count = 0;
 
 function init() {
@@ -28,8 +29,11 @@ function init() {
 	cxt = canvas.getContext('2d');
 	paint = new Painter(canvas, cxt);
 	
+	Tscale = m4.scaling([50, 50, 50]);
+	Tproj = m4.identity(); //m4.perspective(Math.PI/2, 1, 5, 400);
+	Tview = m4.identity(); //m4.multiply(m4.scaling([canvas.width/2,-canvas.height/2,1]), m4.translation([canvas.width/2,canvas.height/2,0]));
+	Tlate = m4.multiply(Tproj, Tview);
 	
-
 	window.requestAnimationFrame(update);
 }
 
@@ -52,34 +56,41 @@ function update() {
 	theta += dtheta;  // Increment rotation
 
 	var eye = [radius*Math.cos(theta), radius*Math.sin(theta), eyeHeight];
-	var Tcamera=m4.inverse(m4.lookAt(eye, target, up));
+	var Tcamera=m4.inverse(m4.lookAt([50,50,20], target, up));
+	
+	//var Tmodel = m4.multiply(m4.scaling([50,50,50]),m4.translation([1,0,0]));
+	//var Tprojection = m4.identity();//m4.perspective(Math.PI/3,2,5,400);
+	//var Tviewport = m4.identity();//m4.multiply(m4.scaling([canvas.width/2,canvas.height/2,1]),m4.translation([canvas.width/2,canvas.height/2,0]));
 	
 	
 	
-	//var Tndc = m4.frustum(canvas.width/2, canvas.width/2, this.canvas.height/2, this.canvas.height/2, -10, -50);
-	var Tvp = m4.scaling([canvas.width/2,-canvas.height/2,1]);
-	Tvp = m4.setTranslation(Tvp,[canvas.width/2,canvas.height/2,0]);
+	//var Tcpv = m4.multiply(m4.multiply(Tcamera,Tprojection),Tviewport);
+	//var Tmcpv = m4.multiply(Tmodel,Tcpv);
 	
-	// Transform for Scale -> Tcamera -> Tndc -> Tvp
-	var Tviewii = m4.multiply(m4.identity(),Tcamera);
-	var Tviewi = m4.multiply(Tviewii,Tndc);
-	var Tview = m4.multiply(Tviewi,Tvp);
+	var Trans = m4.translation([1,0,0]);
+	var Ttemp = m4.multiply(Tscale, Tcamera);
+	var Tadd = m4.multiply(m4.multiply(Tscale,Trans), Tcamera);
 	
-	for(var i=0; i<gridSize; i++) {
+	paint.addSquare("black", 1, "Grid", Tadd);
+	paint.addSquare("red", 1, "Grid", Ttemp);
+	
+	/*for(var i=0; i<gridSize; i++) {
 		for(var j=0; j<gridSize; j++) {
-			var Trans = m4.translate(m4.identity(), [i-gridSize/2, j-gridSize/2,0]);
-			var Tnew = m4.multiply(Trans, Tview);
+			var Trans = m4.translation([i-gridSize/2, j-gridSize/2,0]);
+			var Tinter = m4.multiply(Tscale,Trans)
+			var Tnew = m4.multiply(Trans, Tnope);
+			
 			if(i%2 == j%2) {
 				paint.addSquare("black", 1, "Grid",Tnew);
 			} else {
 				paint.addSquare("black", 0.8, "Grid",Tnew);
 			}
 		}
-	}
+	}*/
 	//drawCube(10,0,1,"red", Tview);
 	//drawCube(0,0,1,"blue", Tview);
 	
-	paint.draw(m4.identity(), wire);
+	paint.draw(wire);
 	
 	paint.clear();
 	
