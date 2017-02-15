@@ -56,7 +56,7 @@ function update() {
 	theta += dtheta;  // Increment rotation
 
 	var eye = [radius*Math.cos(theta), radius*Math.sin(theta), eyeHeight];
-	var Tcamera=m4.inverse(m4.lookAt([50,50,20], target, up));
+	var Tcamera=m4.inverse(m4.lookAt(eye, target, up));
 	
 	//var Tmodel = m4.multiply(m4.scaling([50,50,50]),m4.translation([1,0,0]));
 	//var Tprojection = m4.identity();//m4.perspective(Math.PI/3,2,5,400);
@@ -69,7 +69,11 @@ function update() {
 	
 	var Trans = m4.translation([1,0,0]);
 	var Ttemp = m4.multiply(Tscale, Tcamera);
-	var Tadd = m4.multiply(m4.multiply(Tscale,Trans), Tcamera);
+	//var Texp = m4.scale(Trans, [50,50,0]);
+	var Tadd = m4.multiply(Ttemp, Trans);
+	//var Tadd = m4.translate(Ttemp,[1,0,0]);
+	//var Tadd = m4.multiply(m4.multiply(Trans,Tscale), Tcamera);
+	//var Tadd = m4.multiply(Texp, Tcamera);
 	
 	paint.addSquare("black", 1, "Grid", Tadd);
 	paint.addSquare("red", 1, "Grid", Ttemp);
