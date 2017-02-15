@@ -1,6 +1,6 @@
 "use strict";
 
-var squareVerts = [[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0.5,0.5,0]];
+var squareVerts = [[0,0,0],[25,0,0],[25,25,0],[0,25,0],[0.5,0.5,0]];
 
 // Compare function for painters algorithm sort
 function compare(a, b) {
@@ -32,7 +32,7 @@ Painter.prototype.addSquare = function(Color,Opacity,Purpose,Tx) {
 	this.squares.push(obj);
 }
 
-Painter.prototype.draw = function(Wire) {
+Painter.prototype.draw = function(Tcamera, Wire) {
 	if(Wire) {
 		this.cxt.strokeStyle="black";
 		this.cxt.lineWidth=1;
@@ -44,10 +44,10 @@ Painter.prototype.draw = function(Wire) {
 		this.cxt.fillStyle=this.squares[i].color;
 		this.cxt.globalAlpha = this.squares[i].opacity;
 		this.cxt.beginPath();
-		var v1 = this.squares[i].v1;
-		var v2 = this.squares[i].v2;
-		var v3 = this.squares[i].v3;
-		var v4 = this.squares[i].v4;
+		var v1 = m4.transformPoint(Tcamera, this.squares[i].v1);
+		var v2 = m4.transformPoint(Tcamera, this.squares[i].v2);
+		var v3 = m4.transformPoint(Tcamera, this.squares[i].v3);
+		var v4 = m4.transformPoint(Tcamera, this.squares[i].v4);
 		var xPlus = this.canvas.width/2;
 		var yPlus = this.canvas.height/2;
 		this.cxt.moveTo(v1[0] + xPlus, -v1[1] + yPlus);
