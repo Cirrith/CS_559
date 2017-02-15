@@ -54,6 +54,7 @@ function update() {
 	var eye = [radius*Math.cos(theta), radius*Math.sin(theta), eyeHeight];
 	var Tcamera=m4.inverse(m4.lookAt(eye, target, up));
 <<<<<<< HEAD
+<<<<<<< HEAD
 	
 	//var Tmodel = m4.multiply(m4.scaling([50,50,50]),m4.translation([1,0,0]));
 	var Tproj = m4.perspective(Math.PI/3,2,5,400);
@@ -67,6 +68,8 @@ function update() {
 	var Tvptrans = m4.translation([canvas.width/2,-canvas.height/2,0]);
 	
 	var Tvp = m4.multiply(Tvptrans,Tvpscale);
+=======
+>>>>>>> parent of 18bb02a... TA
 	
 <<<<<<< HEAD
 	var Trb = m4.translation([1,0,0]);
@@ -81,6 +84,7 @@ function update() {
 	var Tsqb = m4.multiply(Tview,Trb);
 	var Tsqr = m4.multiply(Tview,Trr);
 	
+<<<<<<< HEAD
 	//Tprojection->Tcamera->Tscale->Trans
 	var Tviewii = m4.multiply(Tcamera, Tscale);
 	var Tviewi = m4.multiply(Tproj,Tviewii);
@@ -99,6 +103,18 @@ function update() {
 	paint.addSquare("red", 1, "Grid", Tsqr);
 	
 	/*for(var i=0; i<gridSize; i++) {
+=======
+	//var Tndc = m4.frustum(canvas.width/2, canvas.width/2, this.canvas.height/2, this.canvas.height/2, -10, -50);
+	var Tvp = m4.scaling([canvas.width/2,-canvas.height/2,1]);
+	Tvp = m4.setTranslation(Tvp,[canvas.width/2,canvas.height/2,0]);
+	
+	// Transform for Scale -> Tcamera -> Tndc -> Tvp
+	var Tviewii = m4.multiply(m4.identity(),Tcamera);
+	var Tviewi = m4.multiply(Tviewii,Tndc);
+	var Tview = m4.multiply(Tviewi,Tvp);
+	
+	for(var i=0; i<gridSize; i++) {
+>>>>>>> parent of 18bb02a... TA
 =======
 	//var Tndc = m4.frustum(canvas.width/2, canvas.width/2, this.canvas.height/2, this.canvas.height/2, -10, -50);
 	var Tvp = m4.scaling([canvas.width/2,-canvas.height/2,1]);
