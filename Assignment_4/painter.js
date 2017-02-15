@@ -1,6 +1,6 @@
 "use strict";
 
-var squareVerts = [[0,0,0],[50,0,0],[50,50,0],[0,50,0],[0.5,0.5,0]];
+var squareVerts = [[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0.5,0.5,0]];
 
 // Compare function for painters algorithm sort
 function compare(a, b) {

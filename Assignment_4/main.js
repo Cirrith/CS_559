@@ -7,8 +7,8 @@ var paint;
 
 var theta = 0;
 var dtheta = 0.01;
-var radius = 100;
-var eyeHeight = 20;
+var radius = 200;
+var eyeHeight = 100;
 var target = [0,0,0];
 var up = [0,0,1];
 
@@ -59,17 +59,17 @@ function update() {
 	var Tcamera=m4.inverse(m4.lookAt(eye, target, up));
 	
 	//var Tmodel = m4.multiply(m4.scaling([50,50,50]),m4.translation([1,0,0]));
-	var Tproj = m4.perspective(Math.PI/3,2,5,400);
+	var Tproj = m4.perspective(Math.PI/3,2,5,200);
 	//var Tviewport = m4.multiply(m4.scaling([canvas.width/2,canvas.height/2,1]),m4.translation([canvas.width/2,canvas.height/2,0]));
 	//var Tvp = m4.multiply(m4.translation([canvas.width/2,-canvas.height/2,0]),m4.scaling([canvas.wdith/2,canvas.height/2,1]));
 	
-	var Tproj = m4.perspective(Math.PI/3,2,5,200);
+	var Tproj = m4.perspective(Math.PI/3,2,0,400);
 	var Tvpscale = m4.scaling([canvas.width/2,-canvas.height/2,1]);
 	var Tvptrans = m4.translation([canvas.width/2,canvas.height/2,0]);
 	
 	var Tvp = m4.multiply(Tvptrans,Tvpscale);
 	
-	var Trb = m4.translation([1,0,0]);
+	var Trb = m4.translation([50,0,0]);
 	var Trr = m4.translation([0,0,0]);
 	//Tscale->Tcamera->Trans
 	//var Tview = m4.multiply(Tscale, Tcamera);
@@ -99,16 +99,16 @@ function update() {
 	var Tviewi = m4.multiply(Tviewii,Tproj);
 	var Tbasic = m4.multiply(Tviewi,m4.multiply(Tvpscale,Tvptrans));
 	
-	var Tviewii = m4.multiply(m4.identity(),Tcamera);
-	var Tviewi = m4.multiply(Tviewii,Tproj);
-	var Tbasic = m4.multiply(Tviewi,m4.multiply(Tvpscale,Tvptrans));
+	//var Tviewii = m4.multiply(Tscale,Tcamera);
+	//var Tviewi = m4.multiply(Tviewii,Tproj);
+	//var Tbasic = m4.multiply(Tviewi,m4.multiply(Tvpscale,Tvptrans));
 	
+	var Tviewr = (Trr,Tbasic);
+	var Tviewb = (Trb,Tbasic);
 	
-	var Tviewr = (m4.multiply(Tscale,Trr),Tbasic);
-	var Tviewb = (m4.multiply(Tscale,Trb),Tbasic);
-	
+	paint.addSquare("red", 1, "Grid", Tviewr);
 	paint.addSquare("black", 1, "Grid", Tviewb);
-	//paint.addSquare("red", 1, "Grid", Tsqr);
+	
 	
 	/*for(var i=0; i<gridSize; i++) {
 		for(var j=0; j<gridSize; j++) {
