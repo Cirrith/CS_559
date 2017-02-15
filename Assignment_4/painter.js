@@ -50,10 +50,10 @@ Painter.prototype.draw = function(Wire) {
 		var v4 = this.squares[i].v4;
 		var xPlus = this.canvas.width/2;
 		var yPlus = this.canvas.height/2;
-		this.cxt.moveTo(v1[0] + xPlus, -v1[1] + yPlus);
-		this.cxt.lineTo(v2[0] + xPlus, -v2[1] + yPlus);
-		this.cxt.lineTo(v3[0] + xPlus, -v3[1] + yPlus);
-		this.cxt.lineTo(v4[0] + xPlus, -v4[1] + yPlus);
+		this.cxt.moveTo(v1[0], v1[1]);
+		this.cxt.lineTo(v2[0], v2[1]);
+		this.cxt.lineTo(v3[0], v3[1]);
+		this.cxt.lineTo(v4[0], v4[1]);
 		this.cxt.closePath();
 		this.cxt.stroke();
 		if(!Wire) {			
