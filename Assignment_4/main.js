@@ -16,10 +16,8 @@ var gridSize = 20;
 var wire = false;
 
 // Transform from world to camera
+var Tbasic;
 var Tscale;
-var Tproj;
-var Tview;
-var Tlate;
 
 var count = 0;
 
@@ -28,6 +26,17 @@ function init() {
 	canvas = document.getElementById("canvas");
 	cxt = canvas.getContext('2d');
 	paint = new Painter(canvas, cxt);
+	
+	Tscale = m4.scaling([25,25,25]);  // Scale Model
+	
+	var Tproj = m4.perspective(Math.PI/4,canvas.width/canvas.height,50,100);
+	var Tvpscale = m4.scaling([canvas.width/2,-canvas.height/2,1]);
+	var Tvptrans = m4.translation([canvas.width/2,canvas.height/2,0]);
+	
+	var Tvp = m4.multiply(Tvpscale,Tvptrans);
+
+	//Tproj->Tvp
+	Tbasic = m4.multiply(Tproj,Tvp);
 	
 	window.requestAnimationFrame(update);
 }
@@ -55,28 +64,18 @@ function update() {
 	var eye = [radius*Math.cos(theta), radius*Math.sin(theta), eyeHeight];
 	var Tcamera=m4.inverse(m4.lookAt(eye, target, up));
 
-	var Tscale = m4.scaling([25,25,25]);
-	
-	var Tproj = m4.perspective(Math.PI/4,canvas.width/canvas.height,50,100);
-	var Tvpscale = m4.scaling([canvas.width/2,-canvas.height/2,1]);
-	var Tvptrans = m4.translation([canvas.width/2,canvas.height/2,0]);
-	
-	var Tvp = m4.multiply(Tvptrans,Tvpscale);
-
-	//Tscale->Tcamera->Tproj->Tvp
-	var Tviewii = m4.multiply(Tscale,Tcamera);
-	var Tviewi = m4.multiply(Tviewii,Tproj);
-	var Tbasic = m4.multiply(Tviewi,m4.multiply(Tvpscale,Tvptrans));
+	//Tscale->Tcamera->Tbasic
+	var Tviewi = m4.multiply(Tscale,m4.multiply(Tcamera,Tbasic));
 	
 	for(var i=0; i<gridSize; i++) {
 		for(var j=0; j<gridSize; j++) {
 			var Trans = m4.translation([i-gridSize/2, j-gridSize/2,0]);
-			var Tgrid = m4.multiply(Trans,Tbasic); 
+			var Tview = m4.multiply(Trans,Tviewi); 
 			
 			if(i%2 == j%2) {
-				paint.addSquare("black", 1, "Grid",Tgrid);
+				paint.addSquare("black", 1, "Grid",Tview);
 			} else {
-				paint.addSquare("black", 0.8, "Grid",Tgrid);
+				paint.addSquare("black", 0.8, "Grid",Tview);
 			}
 		}
 	}
