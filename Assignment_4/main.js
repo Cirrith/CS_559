@@ -29,7 +29,7 @@ function init() {
 	cxt = canvas.getContext('2d');
 	paint = new Painter(canvas, cxt);
 	
-	Tscale = m4.scaling([50, 50, 50]);
+	Tscale = m4.scaling([25,25,25]);
 	Tproj = m4.identity(); //m4.perspective(Math.PI/2, 1, 5, 400);
 	Tview = m4.identity(); //m4.multiply(m4.scaling([canvas.width/2,-canvas.height/2,1]), m4.translation([canvas.width/2,canvas.height/2,0]));
 	Tlate = m4.multiply(Tproj, Tview);
@@ -69,7 +69,7 @@ function update() {
 	
 	var Tvp = m4.multiply(Tvptrans,Tvpscale);
 	
-	var Trb = m4.translation([50,0,0]);
+	var Trb = m4.translation([1,0,0]);
 	var Trr = m4.translation([0,0,0]);
 	//Tscale->Tcamera->Trans
 	//var Tview = m4.multiply(Tscale, Tcamera);
@@ -103,8 +103,8 @@ function update() {
 	//var Tviewi = m4.multiply(Tviewii,Tproj);
 	//var Tbasic = m4.multiply(Tviewi,m4.multiply(Tvpscale,Tvptrans));
 	
-	var Tviewr = (Trr,Tbasic);
-	var Tviewb = (Trb,Tbasic);
+	var Tviewr = m4.multiply(Trr,Tbasic);
+	var Tviewb = m4.multiply(Trb,Tbasic);
 	
 	paint.addSquare("red", 1, "Grid", Tviewr);
 	paint.addSquare("black", 1, "Grid", Tviewb);
