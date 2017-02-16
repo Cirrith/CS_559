@@ -7,13 +7,14 @@ var paint;
 
 var theta = 0;
 var dtheta = 0.01;
-var radius = 20;
-var eyeHeight = 400;
+var radius = 400;
+var eyeHeight = 200;
 var target = [0,0,0];
 var up = [0,0,1];
 
 var gridSize = 20;
-var wire = false;
+var wire = true;
+var background = "white";
 
 // Transform from world to camera
 var Tbasic;
@@ -27,7 +28,7 @@ function init() {
 	cxt = canvas.getContext('2d');
 	paint = new Painter(canvas, cxt);
 	
-	Tscale = m4.scaling([25,25,25]);  // Scale Model
+	Tscale = m4.scaling([20,20,20]);  // Scale Model
 	
 	var Tproj = m4.perspective(Math.PI/4,canvas.width/canvas.height,50,100);
 	var Tvpscale = m4.scaling([canvas.width/2,-canvas.height/2,1]);
@@ -57,7 +58,7 @@ function drawCube(x,y,z,color,Tx) {
 function update() {
 	"use strict";
 	cxt.clearRect(0,0,canvas.width,canvas.height);  // Clean Canvas
-	cxt.fillStyle = "Black";
+	cxt.fillStyle = background;
 	cxt.fillRect(0,0,canvas.width,canvas.height);
 	theta += dtheta;  // Increment rotation
 
@@ -65,26 +66,27 @@ function update() {
 	var Tcamera=m4.inverse(m4.lookAt(eye, target, up));
 
 	//Tscale->Tcamera->Tbasic
-	var Tviewi = m4.multiply(Tscale,m4.multiply(Tcamera,Tbasic));
+	var Tview = m4.multiply(Tscale,m4.multiply(Tcamera,Tbasic));
 	
 	for(var i=0; i<gridSize; i++) {
 		for(var j=0; j<gridSize; j++) {
 			var Trans = m4.translation([i-gridSize/2, j-gridSize/2,0]);
-			var Tview = m4.multiply(Trans,Tviewi); 
+			var Tviewg = m4.multiply(Trans,Tview); 
 			
 			if(i%2 == j%2) {
-				paint.addSquare("black", 1, "Grid",Tview);
+				paint.addSquare("black", 1, "grid",Tviewg);
 			} else {
-				paint.addSquare("black", 0.8, "Grid",Tview);
+				paint.addSquare("black", 0.8, "grid",Tviewg);
 			}
 		}
 	}
-	//drawCube(10,0,1,"red", Tview);
-	//drawCube(0,0,1,"blue", Tview);
+	drawCube(5,0,1,"red", Tview);
+	drawCube(0,0,1,"blue", Tview);
 	
 	paint.draw(wire);
 	
-	paint.clear();
+	paint.clear("red");
+	paint.clear("grid");
 	
 	count++;
 	if(count == 60) {

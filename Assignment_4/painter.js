@@ -44,16 +44,10 @@ Painter.prototype.draw = function(Wire) {
 		this.cxt.fillStyle=this.squares[i].color;
 		this.cxt.globalAlpha = this.squares[i].opacity;
 		this.cxt.beginPath();
-		var v1 = this.squares[i].v1;
-		var v2 = this.squares[i].v2;
-		var v3 = this.squares[i].v3;
-		var v4 = this.squares[i].v4;
-		var xPlus = this.canvas.width/2;
-		var yPlus = this.canvas.height/2;
-		this.cxt.moveTo(v1[0], v1[1]);
-		this.cxt.lineTo(v2[0], v2[1]);
-		this.cxt.lineTo(v3[0], v3[1]);
-		this.cxt.lineTo(v4[0], v4[1]);
+		this.cxt.moveTo(this.squares[i].v1[0], this.squares[i].v1[1]);
+		this.cxt.lineTo(this.squares[i].v2[0], this.squares[i].v2[1]);
+		this.cxt.lineTo(this.squares[i].v3[0], this.squares[i].v3[1]);
+		this.cxt.lineTo(this.squares[i].v4[0], this.squares[i].v4[1]);
 		this.cxt.closePath();
 		this.cxt.stroke();
 		if(!Wire) {			
