@@ -6,7 +6,7 @@ var cxt;
 var paint;
 
 var theta = 0;
-var dtheta = 0.01;
+var dtheta = 0.0;
 var radius = 400;
 var eyeHeight = 200;
 var target = [0,0,0];
@@ -14,7 +14,7 @@ var up = [0,0,1];
 
 var gridSize = 50;
 var wire = false;
-var background = "white";
+var background = "black";
 
 // Transform from world to camera
 var Tbasic;
