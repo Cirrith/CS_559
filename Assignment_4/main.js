@@ -12,15 +12,19 @@ var eyeHeight = 200;
 var target = [0,0,0];
 var up = [0,0,1];
 
-var gridSize = 20;
-var wire = true;
+var gridSize = 50;
+var wire = false;
 var background = "white";
 
 // Transform from world to camera
 var Tbasic;
 var Tscale;
+var Trans;
 
 var count = 0;
+
+var cubex = 0;
+var cubey = 0;
 
 function init() {
 	"use strict";
@@ -38,6 +42,15 @@ function init() {
 
 	//Tproj->Tvp
 	Tbasic = m4.multiply(Tproj,Tvp);
+	
+	Trans = [];
+	
+	for(var i=0; i<gridSize; i++) {
+		Trans[i] = [];
+		for(var j=0; j<gridSize; j++) {
+			Trans[i][j] = m4.translation([i-gridSize/2, j-gridSize/2,0]);
+		}
+	}
 	
 	window.requestAnimationFrame(update);
 }
@@ -70,8 +83,8 @@ function update() {
 	
 	for(var i=0; i<gridSize; i++) {
 		for(var j=0; j<gridSize; j++) {
-			var Trans = m4.translation([i-gridSize/2, j-gridSize/2,0]);
-			var Tviewg = m4.multiply(Trans,Tview); 
+			//var Trans = m4.translation([i-gridSize/2, j-gridSize/2,0]);
+			var Tviewg = m4.multiply(Trans[i][j],Tview); 
 			
 			if(i%2 == j%2) {
 				paint.addSquare("black", 1, "grid",Tviewg);
@@ -80,18 +93,23 @@ function update() {
 			}
 		}
 	}
-	drawCube(5,0,1,"red", Tview);
+	drawCube(cubex,cubey,1,"red", Tview);
 	drawCube(0,0,1,"blue", Tview);
 	
 	paint.draw(wire);
 	
-	paint.clear("red");
-	paint.clear("grid");
+	paint.clear();
+	//paint.clear("red");
+	//paint.clear("grid");
+	
+	cubex = cubex + 0.01;
+	cubey = 0;
 	
 	count++;
 	if(count == 60) {
-		
-		count = 0;
+		//cubex = cubex + Math.round(Math.random()) - 1;
+		//cubey = cubey + Math.round(Math.random()) - 1;
+		//count = 0;
 	}
 	window.requestAnimationFrame(update);
 }
