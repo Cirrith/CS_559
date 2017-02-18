@@ -30,6 +30,7 @@ function Painter(Canvas, Cxt) {
 	this.squares = [];
 	this.canvas = Canvas
 	this.cxt = Cxt || Canvas.getContext('2d');
+	this.grid = false;
 }
 
 Painter.prototype.addSquare = function(Color,Opacity,Purpose,Tx) {
@@ -77,6 +78,16 @@ Painter.prototype.draw = function(Wire) {
 }
 
 Painter.prototype.clear = function(purpose) {
-	this.squares.length = 0;
+	if(typeof(purpose) == 'undefined') {
+		this.squares.length = 0;
+		this.grid = false;
+		return;
+	}
+	for(var i=0; i<this.squares.length; i++) {
+		if(this.squares[i].purpose == purpose) {
+			this.squares.splice(i,1);
+		}
+	}
+	return;
 }
 
