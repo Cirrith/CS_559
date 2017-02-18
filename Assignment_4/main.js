@@ -6,7 +6,7 @@ var cxt;
 var paint;
 
 var theta = 0;
-var dtheta = 0.0;
+var dtheta = 0.01;
 var radius = 400;
 var eyeHeight = 200;
 var target = [0,0,0];
@@ -70,7 +70,7 @@ function drawCube(x,y,z,color,Tx) {
 
 function update() {
 	"use strict";
-	cxt.clearRect(0,0,canvas.width,canvas.height);  // Clean Canvas
+	//cxt.clearRect(0,0,canvas.width,canvas.height);  // Clean Canvas
 	cxt.fillStyle = background;
 	cxt.fillRect(0,0,canvas.width,canvas.height);
 	theta += dtheta;  // Increment rotation
