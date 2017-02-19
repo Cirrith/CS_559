@@ -7,7 +7,7 @@ var paint;
 
 var theta = 0;
 var dtheta = 0.01;
-var radius = 500;
+var radius = 400;
 var eyeHeight = 200;
 var target = [0,0,0];
 var up = [0,0,1];
@@ -62,6 +62,8 @@ function init() {
 	col = document.getElementById("col");
 	
 	angle = document.getElementById("angle");
+	
+	angle.value = 1;
 	
 	col.innerHTML = "Blue";
 	color.value = 0;
