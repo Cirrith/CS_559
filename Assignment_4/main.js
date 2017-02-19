@@ -21,7 +21,6 @@ var Tscale;
 var Trans;
 
 var frame;
-
 var rotate;
 	
 var speed;
@@ -29,6 +28,8 @@ var spe;
 	
 var color;
 var col;
+
+var angle;
 
 var drawColor = "blue";
 
@@ -52,7 +53,6 @@ function init() {
 	cxt = canvas.getContext('2d');
 	
 	frame = document.getElementById("frame");
-	
 	rotate = document.getElementById("rotate");
 	
 	speed = document.getElementById("speed");
@@ -60,6 +60,8 @@ function init() {
 
 	color = document.getElementById("color");
 	col = document.getElementById("col");
+	
+	angle = document.getElementById("angle");
 	
 	col.innerHTML = "Blue";
 	color.value = 0;
@@ -117,9 +119,10 @@ function init() {
 			ydir = -1;
 			break;
 	}
-	
+
 	color.addEventListener("input", colorHandler);
 	speed.addEventListener("input", speedHandler);
+	angle.addEventListener("input", angleHandler);
 	
 	window.requestAnimationFrame(update);
 }
@@ -174,7 +177,7 @@ function update() {
 		if(!paint.grid) {
 			grid(Tview);
 		}
-	}
+	}	
 
 	cubex = posx + travel * 1/10 * xdir;
 	cubey = posy + travel * 1/10 * ydir;
@@ -398,6 +401,17 @@ function colorHandler() {
 function speedHandler() {
 	dtheta = speed.value/5000;
 	spe.innerHTML = speed.value;
+}
+
+function angleHandler() {
+	var Tproj = m4.perspective(Math.PI/(angle.value*2),canvas.width/canvas.height,50,500);
+	var Tvpscale = m4.scaling([canvas.width/2,-canvas.height/2,1]);
+	var Tvptrans = m4.translation([canvas.width/2,canvas.height/2,0]);
+	
+	var Tvp = m4.multiply(Tvpscale,Tvptrans);
+
+	//Tproj->Tvp
+	Tbasic = m4.multiply(Tproj,Tvp);
 }
 
 window.onload=init;
