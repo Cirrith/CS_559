@@ -7,12 +7,12 @@ var paint;
 
 var theta = 0;
 var dtheta = 0.01;
-var radius = 400;
+var radius = 500;
 var eyeHeight = 200;
 var target = [0,0,0];
 var up = [0,0,1];
 
-var gridSize = 50;
+var gridSize = 30;
 var background = "black";
 
 // Transform from world to camera
@@ -71,7 +71,7 @@ function init() {
 	
 	Tscale = m4.scaling([20,20,20]);  // Scale Model
 	
-	var Tproj = m4.perspective(Math.PI/4,canvas.width/canvas.height,50,100);
+	var Tproj = m4.perspective(Math.PI/2,canvas.width/canvas.height,50,1000);
 	var Tvpscale = m4.scaling([canvas.width/2,-canvas.height/2,1]);
 	var Tvptrans = m4.translation([canvas.width/2,canvas.height/2,0]);
 	
@@ -117,8 +117,6 @@ function init() {
 			ydir = -1;
 			break;
 	}
-	
-	state = "left";
 	
 	color.addEventListener("input", colorHandler);
 	speed.addEventListener("input", speedHandler);
@@ -178,13 +176,13 @@ function update() {
 		}
 	}
 
-	cubex = posx + travel * 1/60 * xdir;
-	cubey = posy + travel * 1/60 * ydir;
+	cubex = posx + travel * 1/10 * xdir;
+	cubey = posy + travel * 1/10 * ydir;
 	travel++;
 	
-	if(travel == 60) {
-		posx = cubex;
-		posy = cubey;
+	if(travel == 10) {
+		posx = Math.round(cubex);
+		posy = Math.round(cubey);
 		count++;
 		newDirection();
 		travel = 0;
@@ -214,49 +212,115 @@ function newDirection() {
 	
 	switch(state) {
 		case "left":
-			if(Math.random()*count > 3 || count > 7 ) {  // New Direction
-				if(left && up && down) {  // Can go anywhere
+			if(Math.random()*count > 3 || count > grid/4 ) {  // New Direction
+				if(down && left && up) {  // Can go anywhere
 					var dir = Math.round(Math.random()*2);
 					if(dir == 0) state = "down";
-					if(dir == 1) state = "left";
-					if(dir == 2) state = "up";
+					else if(dir == 1) state = "left";
+					else state = "up";
 				} else {
 					var dir = Math.round(Math.random());
-
-					if(left && up) {
-						if(dir == 0) state = "left";
-						else state = "up";
-					}
-					
 					if(left && down) {
 						if(dir == 0) state = "left";
 						else state = "down";
 					}
-					
+					if(left && up) {
+						if(dir == 0) state = "left";
+						else state = "up";
+					}
 					if(up && down) {
 						if(dir == 0) state = "down";
 						else state = "up";
 					}
-					if(up)
-						state = "up";
 					if(down)
-						state = "down";	
+						state = "down";
+					if(up)
+						state = "up";	
 				}
 			}
 			break;
 		case "up":
 			if(Math.random()*count > 3 || count > 7) {  // New Direction
-				
+				if(left && up && right) { // Can go anywhere
+					var dir = Math.round(Math.random()*2);
+					if(dir == 0) state = "left";
+					else if(dir == 1) state = "up";
+					else state = "right";
+				} else {
+					var dir = Math.round(Math.random());
+					if(up && left) {
+						if(dir == 0) state = "up";
+						else state = "left";
+					}
+					if(up && right) {
+						if(dir == 0) state = "up";
+						else state = "right";
+					}
+					if(left && right) {
+						if(dir == 0) state = "left";
+						else state = "right";
+					}
+					if(left)
+						state = "left";
+					if(right)
+						state = "right";
+				}
 			}
 			break;
 		case "right":
 			if(Math.random()*count > 3 || count > 7) {  // New Direction
-				
+				if(up && right && down) {
+					var dir = Math.round(Math.random()*2);
+					if(dir == 0) state = "up";
+					else if(dir == 1) state = "right";
+					else state = "down";
+				} else {
+					var dir = Math.round(Math.random());
+					if(right && up) {
+						if(dir == 0) state = "right";
+						else state = "up";
+					}
+					if(right && down) {
+						if(dir == 0) state = "right";
+						else state = "down";
+					}
+					if(up && down) {
+						if(dir == 0) state = "up";
+						else state = "down";
+					}
+					if(up)
+						state = "up";
+					if(down)
+						state = "down";
+				}
 			}
 			break;
 		case "down":
 			if(Math.random()*count > 3 || count > 7) {  // New Direction
-				
+				if(right && down && left) {
+					var dir = Math.round(Math.random()*2);
+					if(dir == 0) state = "right";
+					else if(dir == 1) state = "down";
+					else state = "left";
+				} else {
+					var dir = Math.round(Math.random());
+					if(down && right) {
+						if(dir == 0) state = "down";
+						else state = "right";
+					}
+					if(down && left) {
+						if(dir == 0) state = "down";
+						else state = "left";
+					}
+					if(right && left) {
+						if(dir == 0) state = "right";
+						else state = "left";
+					}
+					if(right)
+						state = "right";
+					if(left)
+						state = "left";
+				}
 			}
 			break;		
 	}
@@ -288,22 +352,22 @@ function newDirection() {
 function check(direction) {
 	switch(direction) {
 		case "left":
-			if(posx-7 < -grid/2)
+			if(posx-gridSize/4 < -gridSize/2)
 				return false;
 			return true;
 			break;
 		case "up":
-			if(posy+7 > (grid/2 -1))
+			if(posy+gridSize/4 > (gridSize/2 -1))
 				return false;
 			return true;
 			break;
 		case "right":
-			if(posx+7 > (grid/2-1))
+			if(posx+gridSize/4 > (gridSize/2-1))
 				return false;
 			return true;
 			break;
 		case "down":
-			if(posy-7 < -grid/2)
+			if(posy-gridSize/4 < -gridSize/2)
 				return false;
 			return true;
 			break;
