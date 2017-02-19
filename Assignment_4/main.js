@@ -13,13 +13,14 @@ var target = [0,0,0];
 var up = [0,0,1];
 
 var gridSize = 50;
-var wire = false;
 var background = "black";
 
 // Transform from world to camera
 var Tbasic;
 var Tscale;
 var Trans;
+
+var frame;
 
 var rotate;
 	
@@ -31,10 +32,26 @@ var col;
 
 var drawColor = "blue";
 
+var posx = 0;
+var posy = 0;
+
+var travel = 0;
+var cubex = 0;
+var cubey = 0;
+
+var count = 0;
+
+var xdir;
+var ydir;
+
+var state;
+
 function init() {
 	"use strict";
 	canvas = document.getElementById("canvas");
 	cxt = canvas.getContext('2d');
+	
+	frame = document.getElementById("frame");
 	
 	rotate = document.getElementById("rotate");
 	
@@ -71,6 +88,37 @@ function init() {
 			Trans[i][j] = m4.translation([i-gridSize/2, j-gridSize/2,0]);
 		}
 	}
+	
+	var direction = Math.round(Math.random() * 3);
+	
+	switch(direction) {
+		case 0:
+			state = "left";
+			console.log("left");
+			xdir = -1;
+			ydir = 0;
+			break;
+		case 1:
+			state = "up";
+			console.log("up");
+			xdir = 0;
+			ydir = 1;
+			break;
+		case 2:
+			state = "right";
+			console.log("right");
+			xdir = 1;
+			ydir = 0;
+			break;
+		case 3:
+			state = "down";
+			console.log("down");
+			xdir = 0;
+			ydir = -1;
+			break;
+	}
+	
+	state = "left";
 	
 	color.addEventListener("input", colorHandler);
 	speed.addEventListener("input", speedHandler);
@@ -109,6 +157,12 @@ function update() {
 	if(rotate.checked) {
 		theta += dtheta;  // Increment rotation
 	}
+	
+	if(frame.checked) {
+		background = "white";
+	} else {
+		background = "black";
+	}
 
 	var eye = [radius*Math.cos(theta), radius*Math.sin(theta), eyeHeight];
 	var Tcamera=m4.inverse(m4.lookAt(eye, target, up));
@@ -124,9 +178,21 @@ function update() {
 		}
 	}
 
-	drawCube(0,0,1,drawColor, Tview);
+	cubex = posx + travel * 1/60 * xdir;
+	cubey = posy + travel * 1/60 * ydir;
+	travel++;
 	
-	paint.draw(wire);
+	if(travel == 60) {
+		posx = cubex;
+		posy = cubey;
+		count++;
+		newDirection();
+		travel = 0;
+	}
+	
+	drawCube(cubex,cubey,1,drawColor,Tview);
+	
+	paint.draw(frame.checked);
 	
 	if(rotate.checked) {  // Regenerate everything
 		paint.clear();
@@ -135,6 +201,113 @@ function update() {
 	}
 
 	window.requestAnimationFrame(update);
+}
+
+
+// 25, 25 out
+// -25, -25 in
+function newDirection() {
+	var left = check("left");
+	var up = check("up");
+	var right = check("right");
+	var down = check("down");
+	
+	switch(state) {
+		case "left":
+			if(Math.random()*count > 3 || count > 7 ) {  // New Direction
+				if(left && up && down) {  // Can go anywhere
+					var dir = Math.round(Math.random()*2);
+					if(dir == 0) state = "down";
+					if(dir == 1) state = "left";
+					if(dir == 2) state = "up";
+				} else {
+					var dir = Math.round(Math.random());
+
+					if(left && up) {
+						if(dir == 0) state = "left";
+						else state = "up";
+					}
+					
+					if(left && down) {
+						if(dir == 0) state = "left";
+						else state = "down";
+					}
+					
+					if(up && down) {
+						if(dir == 0) state = "down";
+						else state = "up";
+					}
+					if(up)
+						state = "up";
+					if(down)
+						state = "down";	
+				}
+			}
+			break;
+		case "up":
+			if(Math.random()*count > 3 || count > 7) {  // New Direction
+				
+			}
+			break;
+		case "right":
+			if(Math.random()*count > 3 || count > 7) {  // New Direction
+				
+			}
+			break;
+		case "down":
+			if(Math.random()*count > 3 || count > 7) {  // New Direction
+				
+			}
+			break;		
+	}
+	
+	switch(state) {
+		case  "left":
+			console.log("left");
+			xdir = -1;
+			ydir = 0;
+			break;
+		case "up":
+			console.log("up");
+			xdir = 0;
+			ydir = 1;
+			break;
+		case "right":
+			console.log("right");
+			xdir = 1;
+			ydir = 0;
+			break;
+		case "down":
+			console.log("down");
+			xdir = 0;
+			ydir = -1;
+			break;
+	}
+}
+
+function check(direction) {
+	switch(direction) {
+		case "left":
+			if(posx-7 < -grid/2)
+				return false;
+			return true;
+			break;
+		case "up":
+			if(posy+7 > (grid/2 -1))
+				return false;
+			return true;
+			break;
+		case "right":
+			if(posx+7 > (grid/2-1))
+				return false;
+			return true;
+			break;
+		case "down":
+			if(posy-7 < -grid/2)
+				return false;
+			return true;
+			break;
+	}
 }
 
 function colorHandler() {
