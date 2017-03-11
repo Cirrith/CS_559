@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title> Assignment 6 </title>
+	<meta "Assignment 6" />
+</head>
+<body>
+	<canvas id="canvas" width="500" height="500" style="border:1px solid black;"></canvas>
+	<script type="text/javascript" src="twgl-full.min2.js"> </script>
+	<script type="text/javascript" src="main.js"></script>
+	<script id="vs" type="notjs">
+		attribute vec3 pos;
+		//attribute vec3 normal;
+		//uniform mat3 normalMatrix;
+		//uniform mat4 modelViewMatrix;
+		uniform mat4 projectionMatrix;
+		
+		void main() {
+			gl_Position = projectionMatrix * vec4(pos, 1.0);
+		}
+	</script>
+	<script id = "fs" type="notjs">
+		void main() {
+			gl_FragColor = vec4(0.0,0.0,1.0,1.0);  // Blue Always
+		}
+	
+	</script>
+</body>
+</html>
