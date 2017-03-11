@@ -9,19 +9,24 @@
 	<script type="text/javascript" src="twgl-full.min2.js"> </script>
 	<script type="text/javascript" src="main.js"></script>
 	<script id="vs" type="notjs">
+		precision highp float;
 		attribute vec3 pos;
-		//attribute vec3 normal;
-		//uniform mat3 normalMatrix;
-		//uniform mat4 modelViewMatrix;
+		attribute vec3 norm;
+		uniform mat4 nProj;
 		uniform mat4 tProj;
+		varying vec3 normal;
 		
 		void main() {
 			gl_Position = tProj * vec4(pos, 1.0);
+			normal = normalize(mat3(nProj) * norm);
 		}
 	</script>
 	<script id = "fs" type="notjs">
+		precision highp float;
+		varying vec3 normal;
+		
 		void main() {
-			gl_FragColor = vec4(0.0,0.0,1.0,1.0);  // Blue Always
+			gl_FragColor = vec4(normal, 1.0);  // Blue Always
 		}
 	
 	</script>

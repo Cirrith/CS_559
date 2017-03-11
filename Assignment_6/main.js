@@ -22,23 +22,21 @@ function start() {
 	}
 	
 	gl.useProgram(shader.program);
-	
+	//nope
 	// Objects
-	var sphere = twgl.primitives.createSphereVertices(1, 24, 12);  // Create sphere
+	var sphere = twgl.primitives.createSphereVertices(3, 24, 12);  // Create sphere
 	
 	// Buffers
 		// Position
 	sphere.posBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, sphere.posBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, sphere.position, gl.STATIC_DRAW);  // Let Data flow
+	gl.bindBuffer(gl.ARRAY_BUFFER,sphere.posBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER,sphere.position,gl.STATIC_DRAW);  // Let Data flow
 	sphere.itemSize = 3;
-	sphere.numItems = sphere.position.length/3;
 		// Normal
-	//sphere.normBuffer = gl.createBuffer();
-	//gl.bindBuffer(gl.ARRAY_BUFFER, sphere.normBuffer);
-	//gl.bufferData(gl.ARRAY_BUFFER, sphere.normal, gl.STATIC_DRAW);
-
-	
+	sphere.normBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER,sphere.normBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER,sphere.normal,gl.STATIC_DRAW);
+		// Indicies
 	sphere.indexBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphere.indexBuffer);
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, sphere.indices, gl.STATIC_DRAW);
@@ -47,22 +45,27 @@ function start() {
 		// Position Attribute
 	shader.posAttribute = gl.getAttribLocation(shader.program,"pos");
 	gl.enableVertexAttribArray(shader.posAttribute);
-		// Transform Uniform
-	shader.transUniform = gl.getUniformLocation(shader.program, "tProj");
-
-	gl.clearColor(1.0,1.0,1.0,1.0);  // Clear color is black
-	gl.enable(gl.DEPTH_TEST);  // Enable z-buffer
+	gl.bindBuffer(gl.ARRAY_BUFFER,sphere.posBuffer);
+	gl.vertexAttribPointer(shader.posAttribute,sphere.itemSize,gl.FLOAT,false,0,0);
+		// Normal Attribute
+	shader.normAttribute = gl.getAttribLocation(shader.program,"norm");
+	gl.enableVertexAttribArray(shader.normAttribute);
+	gl.bindBuffer(gl.ARRAY_BUFFER,sphere.normBuffer);
+	gl.vertexAttribPointer(shader.normAttribute,sphere.itemSize,gl.FLOAT,false,0,0);
+		// Model Transform Uniform
+	shader.transUniform = gl.getUniformLocation(shader.program,"tProj");
+	gl.uniformMatrix4fv(shader.transUniform,false,tMat); 
+		// Normal Transform Uniform
+	shader.normUniform = gl.getUniformLocation(shader.program,"nProj");
+	gl.uniformMatrix4fv(shader.normUniform, false, m4.inverse(m4.transpose(tMat)));
 	
-	function draw() {
+	// Clear Behavior
+	gl.clearColor(1.0,1.0,1.0,1.0);  // Clear color is black
+	gl.enable(gl.DEPTH_TEST);  // Enable z-buffer	
 
+	function draw() {
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);  // Clear Screen and Depth
 
-		// Setup Attributes and Uniform
-		gl.uniformMatrix4fv(shader.transUniform,false,tMat);  // Uniform
-		
-		gl.bindBuffer(gl.ARRAY_BUFFER, sphere.posBuffer);
-		gl.vertexAttribPointer(shader.posAttribute,sphere.itemSize, gl.FLOAT, false, 0, 0);
-		
 		// Draw Stuff
 		gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 		
