@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="description" content="One Triangle Simplified">
+	<meta charset="utf-8">
+	<title>JS Bin</title>
+	<script id="vs" type="not-js">
+		attribute vec3 pos;
+		void main(void) {
+			gl_Position = vec4(pos, 1.0);
+		}
+	</script>
+	<script id="fs" type="not-js">
+		void main(void) {
+			gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
+		}
+	</script>
+</head>
+<body onload="start()">
+	<canvas id="mycanvas" width="400" height="400"></canvas>
+</body>
+</html>
