@@ -3,16 +3,25 @@ function start() {
 	var canvas = document.getElementById("canvas");
 	var gl = twgl.getWebGLContext(canvas);
 	
+	var eyeRadius = 10;
+	var eyeHeight = 10;
+	var eyeThata = 0;
+	var eyePhi = 0;
+	
 	var target = [0,0,0];  // Always Look at Center
 	var up = [0,0,1];  // Z is always up
 	var eye = [10, 0, 10];
+
+	var mXFactor = 0.5;  // Moving width of window will rotate by 50%
+	var mYFactor = 0.5;  // Moving height of window will rotate by 50%
 	
 	//Transforms	
 	var tModel = m4.identity();
 	var tCamera = m4.inverse(m4.lookAt(eye, target, up));
+	var tBasic = m4.multiply(tModel, tCamera);
 	var tProjection = m4.perspective(Math.PI/2, canvas.width/canvas.height, 10, 1000);
 	
-	var tMat = m4.multiply(m4.multiply(tModel,tCamera), tProjection);
+	var tMat = m4.multiply(tBasic, tProjection);
 
 	// Shaders and Program
 	var shader = twgl.createProgramInfo(gl, ["vs", "fs"]);  // Compile and link program
@@ -22,7 +31,7 @@ function start() {
 	}
 	
 	gl.useProgram(shader.program);
-	//nope
+
 	// Objects
 	var sphere = twgl.primitives.createSphereVertices(3, 24, 12);  // Create sphere
 	
@@ -57,7 +66,7 @@ function start() {
 	gl.uniformMatrix4fv(shader.transUniform,false,tMat); 
 		// Normal Transform Uniform
 	shader.normUniform = gl.getUniformLocation(shader.program,"nProj");
-	gl.uniformMatrix4fv(shader.normUniform, false, m4.inverse(m4.transpose(tMat)));
+	gl.uniformMatrix4fv(shader.normUniform, false, m4.inverse(m4.transpose(tBasic)));  // Transform normal with non-projection transform
 	
 	// Clear Behavior
 	gl.clearColor(1.0,1.0,1.0,1.0);  // Clear color is black
@@ -86,15 +95,31 @@ function start() {
 	
 	function mouseDownHandler(e) {
 		mouseDown = true;
-		lastMouseX = e.x;
-		lastMouseY = e.y;
+		lastMouseX = e.clientX;
+		lastMouseY = e.clientY;
+		console.log("Down: X:" + e.x + " Y:" + e.y);
 	}
 	
 	function mouseUpHandler(e) {
 		mouseDown = false;
+		console.log("Up");
 	}
 	
 	function mouseMoveHandler(e) {
+		if(!mouseDown)
+			return;
+		var newX = e.clientX;
+		var newY = e.clientY;
+
+		var deltaX = lastMouseX - newX;
+		var deltaY = lastMouseY - newY;
+
+		var theta = 2*Math.PI*deltaX/canvas.width * mXFactor;
+		var phi = 2*Math.PI*deltaY/canvas.height * mYFactor;
+
+		rotation = m4.multiply(rotation,m4.multiply(m4.rotationZ(theta), m4.rotationY(phi)));
+
+		console.log("X:" + e.x + " Y:" + e.y);
 	}
 	draw();
 }
