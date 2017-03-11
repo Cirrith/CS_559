@@ -1,29 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title> Assignment 6 </title>
-	<meta "Assignment 6" />
+<meta name="description" content="Two triangles with TWGL">
+  <meta charset="utf-8">
+  <title>JS Bin</title>
+  <script src="http://graphics.cs.wisc.edu/JS/twgl-full.min.js"></script>
 </head>
-<body>
-	<canvas id="canvas" width="500" height="500" style="border:1px solid black;"></canvas>
-	<script type="text/javascript" src="twgl-full.min2.js"> </script>
-	<script type="text/javascript" src="main.js"></script>
-	<script id="vs" type="notjs">
-		attribute vec3 pos;
-		//attribute vec3 normal;
-		//uniform mat3 normalMatrix;
-		//uniform mat4 modelViewMatrix;
-		uniform mat4 transform;
-		
-		void main() {
-			gl_Position = transform * vec4(pos, 1.0);
-		}
-	</script>
-	<script id = "fs" type="notjs">
-		void main() {
-			gl_FragColor = vec4(0.0,0.0,1.0,1.0);  // Blue Always
-		}
-	
-	</script>
+<canvas id="mycanvas" width="400" height="400"></canvas>
 </body>
+  <script type="text/javascript" src="main.js" />
+<script id="vs" type="notjs">
+  attribute vec3 pos;
+  attribute vec3 inColor;
+  varying vec3 outColor;
+  uniform mat4 transf;
+  void main(void) {
+    gl_Position = transf * vec4(pos, 1.0);
+    outColor = inColor;
+  }
+</script>
+<script id="fs" type="notjs">
+  precision highp float;
+  varying vec3 outColor;
+  void main(void) {
+    gl_FragColor = vec4(outColor, 1.0);
+  }
+</script>
+  
 </html>
