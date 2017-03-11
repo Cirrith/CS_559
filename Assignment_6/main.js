@@ -5,12 +5,12 @@ function start() {
 	
 	var eyeRadius = 10;
 	var eyeHeight = 10;
-	var eyeThata = 0;
-	var eyePhi = 0;
-	
+	var eyeTheta = 0;
+	var eyePhi = Math.PI/2;
+
 	var target = [0,0,0];  // Always Look at Center
 	var up = [0,0,1];  // Z is always up
-	var eye = [10, 0, 10];
+	var eye = [eyeRadius*Math.sin(eyePhi)*Math.cos(eyeTheta),eyeRadius*Math.sin(eyePhi)*Math.sin(eyeTheta),eyeRadius*Math.cos(eyePhi)];
 
 	var mXFactor = 0.5;  // Moving width of window will rotate by 50%
 	var mYFactor = 0.5;  // Moving height of window will rotate by 50%
@@ -63,16 +63,25 @@ function start() {
 	gl.vertexAttribPointer(shader.normAttribute,sphere.itemSize,gl.FLOAT,false,0,0);
 		// Model Transform Uniform
 	shader.transUniform = gl.getUniformLocation(shader.program,"tProj");
-	gl.uniformMatrix4fv(shader.transUniform,false,tMat); 
+	
 		// Normal Transform Uniform
 	shader.normUniform = gl.getUniformLocation(shader.program,"nProj");
-	gl.uniformMatrix4fv(shader.normUniform, false, m4.inverse(m4.transpose(tBasic)));  // Transform normal with non-projection transform
+	
 	
 	// Clear Behavior
 	gl.clearColor(1.0,1.0,1.0,1.0);  // Clear color is black
 	gl.enable(gl.DEPTH_TEST);  // Enable z-buffer	
 
 	function draw() {
+		eye = [eyeRadius*Math.sin(eyePhi)*Math.cos(eyeTheta),eyeRadius*Math.sin(eyePhi)*Math.sin(eyeTheta),eyeRadius*Math.cos(eyePhi)];
+
+		tCamera = m4.inverse(m4.lookAt(eye,target,up));
+		tBasic = m4.multiply(tModel, tCamera);
+		tMat = m4.multiply(tBasic, tProjection);
+
+		gl.uniformMatrix4fv(shader.transUniform,false,tMat); 
+		gl.uniformMatrix4fv(shader.normUniform, false, m4.inverse(m4.transpose(m4.identity())));  // Transform normal with non-projection transform
+
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);  // Clear Screen and Depth
 
 		// Draw Stuff
@@ -117,9 +126,22 @@ function start() {
 		var theta = 2*Math.PI*deltaX/canvas.width * mXFactor;
 		var phi = 2*Math.PI*deltaY/canvas.height * mYFactor;
 
-		rotation = m4.multiply(rotation,m4.multiply(m4.rotationZ(theta), m4.rotationY(phi)));
+		eyeTheta = (eyeTheta + theta) % (2*Math.PI);
+		if((eyePhi + phi) > Math.PI) {
+			eyePhi = Math.PI - 1e-3;
+			console.log("1");
+		} else if((eyePhi + phi) < 0) {
+			eyePhi = 1e-3;
+			console.log("2");
+		} else {
+			eyePhi = eyePhi + phi;
+			console.log("3");
+		}
 
-		console.log("X:" + e.x + " Y:" + e.y);
+		lastMouseX = newX;
+		lastMouseY = newY;
+
+		console.log("Theta:" + eyeTheta + " Phi:" + eyePhi);
 	}
 	draw();
 }
