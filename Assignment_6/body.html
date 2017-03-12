@@ -44,7 +44,7 @@
 			vec3 n = normalize(fNormal);
 			vec3 h = normalize(v+s);
 			vec3 lightColor = vec3(1.0,1.0,1.0);
-			if(length(fPosition) < 2.5) {
+			if(length(fPosition) < 2.5) {  // Don't do sun
 				gl_FragColor = vec4(color, 1.0);
 				return;
 			}
