@@ -5,7 +5,7 @@
 	<meta "Assignment 6" />
 </head>
 <body>
-	<canvas id="canvas" width="500" height="500" style="border:1px solid black;"></canvas>
+	<canvas id="canvas" width="1400" height="800" style="border:1px solid black;"></canvas>
 	<script type="text/javascript" src="twgl-full.min2.js"> </script>
 	<script type="text/javascript" src="main.js"></script>
 	<script id="vs" type="notjs">
@@ -43,7 +43,7 @@
 				return;
 			}
 			vec3 ambient = 0.25 * color;
-			vec3 diffuse = 0.8 * max(0.0, dot(n,s)) * lightColor;
+			vec3 diffuse = 0.9 * max(0.0, dot(n,s)) * lightColor;
 			vec3 specular = 0.5 * pow(max(0.0, dot(n,h)), 0.1) * lightColor; 
 			gl_FragColor = vec4(ambient + diffuse, 1.0);  // Blue Always
 		}

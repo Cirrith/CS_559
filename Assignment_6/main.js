@@ -76,11 +76,13 @@ function start() {
 	var tScaleS = m4.scaling([.35, .35, .35]);
 	var tScaleSM1 = m4.scaling([0.08, 0.08, 0.08]);
 	var tScaleSM2 = m4.scaling([0.06, 0.06, 0.06]);
+	var tScalePluto = m4.scaling([.05, .05, .05]);
 	var tTrans1 = m4.translation([6,0,0]);
 	var tTrans2 = m4.translation([1,0,0]);
-	var tTrans3 = m4.translation([12,0,0]);
+	var tTrans3 = m4.translation([-12,0,0]);
 	var tTrans4 = m4.translation([1.5,0,0]);
 	var tTrans5 = m4.translation([-1,0,0]);
+	var tTransPluto = m4.translation([40,0,0]);
 
 	var colorC = [1.0,1.0,0.3];  // Sun Color
 	var colorF = [0.4,0.4,0.6];  // First Planet Color
@@ -88,6 +90,7 @@ function start() {
 	var colorS = [0.2,0.5,1];
 	var colorSM1 = [0.1,0,0.6];
 	var colorSM2 = [0,0.6,0.1];
+	var colorPluto = [0.9,0.7,0.5];
 	
 	var eye;
 	var tCamera;
@@ -180,6 +183,19 @@ function start() {
 		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
 		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
 		gl.uniform3fv(shader.colorUniform,colorSM2);
+
+		gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
+
+	// Pluto
+		tRot = m4.rotationZ(2*Math.PI*time/25);
+		tBasic = m4.multiply(tTransPluto,tRot);
+		tModel = m4.multiply(tScalePluto, tBasic);
+
+		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
+		gl.uniformMatrix4fv(shader.cameraUniform,false,tCamera);
+		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
+		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
+		gl.uniform3fv(shader.colorUniform,colorPluto);
 
 		gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 
