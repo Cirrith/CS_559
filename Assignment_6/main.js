@@ -4,24 +4,17 @@ function start() {
 	var gl = twgl.getWebGLContext(canvas);
 	
 	var eyeRadius = 10;
-	var eyeHeight = 10;
+	var eyeRadiusDelta = 0.5;
 	var eyeTheta = 0;
 	var eyePhi = Math.PI/2;
 
+	var up = [0,0,1];
 	var target = [0,0,0];  // Always Look at Center
-	var up = [0,0,1];  // Z is always up
-	//var eye = [eyeRadius*Math.sin(eyePhi)*Math.cos(eyeTheta),eyeRadius*Math.sin(eyePhi)*Math.sin(eyeTheta),eyeRadius*Math.cos(eyePhi)];
-	var eye = [10, 0, 10];
 	var mXFactor = 0.5;  // Moving width of window will rotate by 50%
 	var mYFactor = 0.5;  // Moving height of window will rotate by 50%
 	
 	//Transforms	
-	var tModel = m4.identity();
-	var tCamera = m4.inverse(m4.lookAt(eye, target, up));
-	var tBasic = m4.multiply(tModel, tCamera);
-	var tProjection = m4.perspective(Math.PI/2, canvas.width/canvas.height, 10, 1000);
-	
-	var tMat = m4.multiply(tBasic, tProjection);
+	var tProjection = m4.perspective(Math.PI/2, canvas.width/canvas.height, 1, 1000);
 
 	// Shaders and Program
 	var shader = twgl.createProgramInfo(gl, ["vs", "fs"]);  // Compile and link program
@@ -33,7 +26,7 @@ function start() {
 	gl.useProgram(shader.program);
 
 	// Objects
-	var sphere = twgl.primitives.createSphereVertices(3, 24, 12);  // Create sphere
+	var sphere = twgl.primitives.createSphereVertices(2, 100, 100);  // Create sphere
 	
 	// Buffers
 		// Position
@@ -72,22 +65,59 @@ function start() {
 	gl.clearColor(1.0,1.0,1.0,1.0);  // Clear color is black
 	gl.enable(gl.DEPTH_TEST);  // Enable z-buffer	
 
+	var time = 0;
+
+	var tScaleHalf = m4.scaling([0.5, 0.5, 0.5]);
+	var tScaleQuat = m4.scaling([0.25, 0.25, 0.25]);
+	var tTrans1 = m4.translation([10,0,0]);
+	var tTrans2 = m4.translation([3,0,0]);
+	
+	var eye;
+	var tCamera;
+	var tMat;  // Model + Camera + Projection
+	var tRot;
+	var tBasic;
+	var tModel;
+
 	function draw() {
-		teye = [eyeRadius*Math.sin(eyePhi)*Math.cos(eyeTheta),eyeRadius*Math.sin(eyePhi)*Math.sin(eyeTheta),eyeRadius*Math.cos(eyePhi)];
-		eye = [10, 0, 10];
+	// Clear Screen and Depth
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+	// Draw Star
+		eye = [eyeRadius*Math.sin(eyePhi)*Math.cos(eyeTheta),eyeRadius*Math.sin(eyePhi)*Math.sin(eyeTheta),eyeRadius*Math.cos(eyePhi)];
 		tCamera = m4.inverse(m4.lookAt(eye,target,up));
-		tBasic = m4.multiply(tModel, tCamera);
-		tMat = m4.multiply(tBasic, tProjection);
+		tMat = m4.multiply(tCamera, tProjection);
 
 		gl.uniformMatrix4fv(shader.transUniform,false,tMat); 
-		gl.uniformMatrix4fv(shader.normUniform, false, m4.inverse(m4.transpose(tBasic)));  // Transform normal with non-projection transform
+		gl.uniformMatrix4fv(shader.normUniform, false, m4.inverse(m4.transpose(tCamera)));  // Transform normal with non-projection transform
 
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);  // Clear Screen and Depth
-
-		// Draw Stuff
 		gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
+
+	// First Planet
+		tRot = m4.rotationZ(2*Math.PI*time/10);
+		tBasic = m4.multiply(tTrans1, tRot);
+		tModel = m4.multiply(m4.multiply(tScaleHalf, tBasic), tCamera);
+
+		tMat = m4.multiply(tModel,tProjection);
+
+		gl.uniformMatrix4fv(shader.transUniform,false,tMat); 
+		gl.uniformMatrix4fv(shader.normUniform, false, m4.inverse(m4.transpose(tModel)));  // Transform normal with non-projection transform
 		
-		
+		gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
+	
+	// First Planet Moon
+		tRot = m4.rotationZ(2*Math.PI*time/2);
+		tBasic = m4.multiply(m4.multiply(tTrans2,tRot),tBasic);
+		tModel = m4.multiply(m4.multiply(tScaleQuat,tBasic), tCamera);
+
+		tMat = m4.multiply(tModel,tProjection);
+
+		gl.uniformMatrix4fv(shader.transUniform,false,tMat); 
+		gl.uniformMatrix4fv(shader.normUniform, false, m4.inverse(m4.transpose(tModel)));  // Transform normal with non-projection transform
+
+		gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
+
+		time += 0.01;
 		window.requestAnimationFrame(draw);
 	}
 	
@@ -96,14 +126,24 @@ function start() {
 	var lastMouseY;
 
 	canvas.onmousedown = mouseDownHandler;
+	canvas.onwheel = mouseWheelHandler;
 	document.onmouseup = mouseUpHandler;
 	document.onmousemove = mouseMoveHandler;
 
-	
 	function mouseDownHandler(e) {
 		mouseDown = true;
 		lastMouseX = e.clientX;
 		lastMouseY = e.clientY;
+	}
+
+	function mouseWheelHandler(e) {
+		if(e.wheelDeltaY < 0) {
+			if((eyeRadius -= eyeRadiusDelta) < 5)
+				eyeRadius = 5;
+		} else {
+			if((eyeRadius += eyeRadiusDelta) > 50)
+				eyeRadius = 50;
+		}
 	}
 	
 	function mouseUpHandler(e) {
