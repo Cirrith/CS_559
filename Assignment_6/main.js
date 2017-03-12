@@ -45,21 +45,25 @@ function start() {
 	
 	// Setup Locations
 		// Position Attribute
-	shader.posAttribute = gl.getAttribLocation(shader.program,"pos");
+	shader.posAttribute = gl.getAttribLocation(shader.program,"position");
 	gl.enableVertexAttribArray(shader.posAttribute);
 	gl.bindBuffer(gl.ARRAY_BUFFER,sphere.posBuffer);
 	gl.vertexAttribPointer(shader.posAttribute,sphere.itemSize,gl.FLOAT,false,0,0);
 		// Normal Attribute
-	shader.normAttribute = gl.getAttribLocation(shader.program,"norm");
+	shader.normAttribute = gl.getAttribLocation(shader.program,"normal");
 	gl.enableVertexAttribArray(shader.normAttribute);
 	gl.bindBuffer(gl.ARRAY_BUFFER,sphere.normBuffer);
 	gl.vertexAttribPointer(shader.normAttribute,sphere.itemSize,gl.FLOAT,false,0,0);
 		// Model Transform Uniform
-	shader.transUniform = gl.getUniformLocation(shader.program,"tProj");
+	shader.transUniform = gl.getUniformLocation(shader.program,"modelViewMatrix");  //Mat4
+		// Camera Uniform
+	//shader.cameraUniform = gl.getUniformLocation(shader.program,"cameraViewMatrix");
+		// Projection Uniform
+	shader.projUnifrom = gl.getUniformLocation(shader.program,"projectionMatrix");  // Mat4
 		// Normal Transform Uniform
-	shader.normUniform = gl.getUniformLocation(shader.program,"nProj");
+	shader.normUniform = gl.getUniformLocation(shader.program,"normalMatrix");  // Mat4
 		// Color Unfirom
-	//shader.colorUniform = gl.getUniformLocation(shader.program,"ambient");
+	shader.colorUniform = gl.getUniformLocation(shader.program,"color");  // Vec3
 	
 	// Clear Behavior
 	gl.clearColor(1.0,1.0,1.0,1.0);  // Clear color is black
@@ -77,6 +81,13 @@ function start() {
 	var tTrans3 = m4.translation([12,0,0]);
 	var tTrans4 = m4.translation([1.5,0,0]);
 	var tTrans5 = m4.translation([-1,0,0]);
+
+	var colorC = [0.9,0.3,0];  // Sun Color
+	var colorF = [0.4,0.4,0.6];  // First Planet Color
+	var colorFM = [0.4,0.8,1.0];
+	var colorS = [0.9,0.9,0];
+	var colorSM1 = [0.1,0,0.6];
+	var colorSM2 = [0,0.6,0.1];
 	
 	var eye;
 	var tCamera;
@@ -92,10 +103,11 @@ function start() {
 	// Draw Star
 		eye = [eyeRadius*Math.sin(eyePhi)*Math.cos(eyeTheta),eyeRadius*Math.sin(eyePhi)*Math.sin(eyeTheta),eyeRadius*Math.cos(eyePhi)];
 		tCamera = m4.inverse(m4.lookAt(eye,target,up));
-		tMat = m4.multiply(tCamera, tProjection);
 
-		gl.uniformMatrix4fv(shader.transUniform,false,tMat); 
-		gl.uniformMatrix4fv(shader.normUniform, false, m4.inverse(m4.transpose(tCamera)));  // Transform normal with non-projection transform
+		gl.uniformMatrix4fv(shader.transUniform,false,tCamera);
+		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
+		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tCamera)));
+		gl.uniform3fv(shader.colorUniform,colorC);
 
 		gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 
@@ -104,10 +116,15 @@ function start() {
 		tBasic = m4.multiply(tTrans1, tRot);
 		tModel = m4.multiply(m4.multiply(tScaleF, tBasic), tCamera);
 
-		tMat = m4.multiply(tModel,tProjection);
+		//tMat = m4.multiply(tModel,tProjection);
 
-		gl.uniformMatrix4fv(shader.transUniform,false,tMat); 
-		gl.uniformMatrix4fv(shader.normUniform, false, m4.inverse(m4.transpose(tModel)));  // Transform normal with non-projection transform
+		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
+		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
+		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
+		gl.uniform3fv(shader.colorUniform,colorF);
+
+		//gl.uniformMatrix4fv(shader.transUniform,false,tMat); 
+		//gl.uniformMatrix4fv(shader.normUniform, false, m4.inverse(m4.transpose(tModel)));  // Transform normal with non-projection transform
 		
 		gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 	
@@ -116,10 +133,10 @@ function start() {
 		tBasic = m4.multiply(m4.multiply(tTrans2,tRot),tBasic);
 		tModel = m4.multiply(m4.multiply(tScaleFM,tBasic),tCamera);
 
-		tMat = m4.multiply(tModel,tProjection);
-
-		gl.uniformMatrix4fv(shader.transUniform,false,tMat); 
-		gl.uniformMatrix4fv(shader.normUniform, false, m4.inverse(m4.transpose(tModel)));  // Transform normal with non-projection transform
+		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
+		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
+		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
+		gl.uniform3fv(shader.colorUniform,colorFM);
 
 		gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 
@@ -128,10 +145,10 @@ function start() {
 		tBasic = m4.multiply(tTrans3,tRot);
 		tModel = m4.multiply(m4.multiply(tScaleS,tBasic), tCamera);
 
-		tMat = m4.multiply(tModel, tProjection);
-
-		gl.uniformMatrix4fv(shader.transUniform,false,tMat); 
-		gl.uniformMatrix4fv(shader.normUniform, false, m4.inverse(m4.transpose(tModel)));  // Transform normal with non-projection transform
+		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
+		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
+		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
+		gl.uniform3fv(shader.colorUniform,colorS);
 
 		gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 
@@ -141,10 +158,10 @@ function start() {
 		tBasic = m4.multiply(m4.multiply(tTrans4,tRot),tBasic);
 		tModel = m4.multiply(m4.multiply(tScaleSM1,tBasic),tCamera);
 
-		tMat = m4.multiply(tModel,tProjection);
-
-		gl.uniformMatrix4fv(shader.transUniform,false,tMat); 
-		gl.uniformMatrix4fv(shader.normUniform, false, m4.inverse(m4.transpose(tModel)));  // Transform normal with non-projection transform
+		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
+		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
+		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
+		gl.uniform3fv(shader.colorUniform,colorSM1);
 
 		gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 
@@ -153,10 +170,10 @@ function start() {
 		tBasic = m4.multiply(m4.multiply(tTrans5,tRot),tSave);
 		tModel = m4.multiply(m4.multiply(tScaleSM2,tBasic),tCamera);
 
-		tMat = m4.multiply(tModel,tProjection);
-
-		gl.uniformMatrix4fv(shader.transUniform,false,tMat); 
-		gl.uniformMatrix4fv(shader.normUniform, false, m4.inverse(m4.transpose(tModel)));  // Transform normal with non-projection transform
+		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
+		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
+		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
+		gl.uniform3fv(shader.colorUniform,colorSM2);
 
 		gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 
