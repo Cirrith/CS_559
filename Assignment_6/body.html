@@ -14,7 +14,7 @@
 		attribute vec3 normal;
 		uniform mat4 normalMatrix;
 		uniform mat4 modelViewMatrix;
-		//uniform mat4 cameraViewMatrix;
+		uniform mat4 cameraViewMatrix;
 		uniform mat4 projectionMatrix;
 		varying vec3 fNormal;
 		varying vec3 fPosition;
@@ -23,7 +23,7 @@
 			fNormal = normalize(mat3(normalMatrix) * normal);
 			vec4 pos = modelViewMatrix * vec4(position, 1.0);
 			fPosition = pos.xyz;
-			gl_Position = projectionMatrix * pos;
+			gl_Position = (projectionMatrix * cameraViewMatrix) * pos;
 		}
 	</script>
 	<script id = "fs" type="notjs">
@@ -38,11 +38,14 @@
 			vec3 n = normalize(fNormal);
 			vec3 h = normalize(v+s);
 			vec3 lightColor = vec3(1.0,1.0,1.0);
-
-			vec3 ambient = 0.5 * color;
-			vec3 diffuse = 0.5 * max(0.0, dot(n,s)) * lightColor;
-			vec3 specular = 0.5 * pow(max(0.0, dot(n,h)), 0.25) * lightColor; 
-			gl_FragColor = vec4(diffuse, 1.0);  // Blue Always
+			if(length(fPosition) < 2.5) {
+				gl_FragColor = vec4(color, 1.0);
+				return;
+			}
+			vec3 ambient = 0.25 * color;
+			vec3 diffuse = 0.8 * max(0.0, dot(n,s)) * lightColor;
+			vec3 specular = 0.5 * pow(max(0.0, dot(n,h)), 0.1) * lightColor; 
+			gl_FragColor = vec4(ambient + diffuse, 1.0);  // Blue Always
 		}
 	
 	</script>

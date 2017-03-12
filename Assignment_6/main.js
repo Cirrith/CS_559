@@ -57,7 +57,7 @@ function start() {
 		// Model Transform Uniform
 	shader.transUniform = gl.getUniformLocation(shader.program,"modelViewMatrix");  //Mat4
 		// Camera Uniform
-	//shader.cameraUniform = gl.getUniformLocation(shader.program,"cameraViewMatrix");
+	shader.cameraUniform = gl.getUniformLocation(shader.program,"cameraViewMatrix");
 		// Projection Uniform
 	shader.projUnifrom = gl.getUniformLocation(shader.program,"projectionMatrix");  // Mat4
 		// Normal Transform Uniform
@@ -66,7 +66,7 @@ function start() {
 	shader.colorUniform = gl.getUniformLocation(shader.program,"color");  // Vec3
 	
 	// Clear Behavior
-	gl.clearColor(1.0,1.0,1.0,1.0);  // Clear color is black
+	gl.clearColor(0.1,0,0.1,1.0);  // Clear color is black
 	gl.enable(gl.DEPTH_TEST);  // Enable z-buffer	
 
 	var time = 0;
@@ -82,10 +82,10 @@ function start() {
 	var tTrans4 = m4.translation([1.5,0,0]);
 	var tTrans5 = m4.translation([-1,0,0]);
 
-	var colorC = [0.9,0.3,0];  // Sun Color
+	var colorC = [1.0,1.0,0.3];  // Sun Color
 	var colorF = [0.4,0.4,0.6];  // First Planet Color
 	var colorFM = [0.4,0.8,1.0];
-	var colorS = [0.9,0.9,0];
+	var colorS = [0.2,0.5,1];
 	var colorSM1 = [0.1,0,0.6];
 	var colorSM2 = [0,0.6,0.1];
 	
@@ -104,7 +104,8 @@ function start() {
 		eye = [eyeRadius*Math.sin(eyePhi)*Math.cos(eyeTheta),eyeRadius*Math.sin(eyePhi)*Math.sin(eyeTheta),eyeRadius*Math.cos(eyePhi)];
 		tCamera = m4.inverse(m4.lookAt(eye,target,up));
 
-		gl.uniformMatrix4fv(shader.transUniform,false,tCamera);
+		gl.uniformMatrix4fv(shader.transUniform,false,m4.identity());
+		gl.uniformMatrix4fv(shader.cameraUniform,false,tCamera);
 		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
 		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tCamera)));
 		gl.uniform3fv(shader.colorUniform,colorC);
@@ -114,26 +115,25 @@ function start() {
 	// First Planet
 		tRot = m4.rotationZ(2*Math.PI*time/10);
 		tBasic = m4.multiply(tTrans1, tRot);
-		tModel = m4.multiply(m4.multiply(tScaleF, tBasic), tCamera);
-
-		//tMat = m4.multiply(tModel,tProjection);
+		//tModel = m4.multiply(m4.multiply(tScaleF, tBasic), tCamera);
+		tModel = m4.multiply(tScaleF, tBasic);
 
 		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
+		gl.uniformMatrix4fv(shader.cameraUniform,false,tCamera);
 		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
 		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
 		gl.uniform3fv(shader.colorUniform,colorF);
-
-		//gl.uniformMatrix4fv(shader.transUniform,false,tMat); 
-		//gl.uniformMatrix4fv(shader.normUniform, false, m4.inverse(m4.transpose(tModel)));  // Transform normal with non-projection transform
 		
 		gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 	
 	// First Planet Moon
 		tRot = m4.rotationZ(2*Math.PI*time/2);
 		tBasic = m4.multiply(m4.multiply(tTrans2,tRot),tBasic);
-		tModel = m4.multiply(m4.multiply(tScaleFM,tBasic),tCamera);
+		//tModel = m4.multiply(m4.multiply(tScaleFM,tBasic),tCamera);
+		tModel = m4.multiply(tScaleFM,tBasic);
 
 		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
+		gl.uniformMatrix4fv(shader.cameraUniform,false,tCamera);
 		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
 		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
 		gl.uniform3fv(shader.colorUniform,colorFM);
@@ -143,9 +143,11 @@ function start() {
 	// Second Planet
 		tRot = m4.rotationZ(2*Math.PI*time/13);
 		tBasic = m4.multiply(tTrans3,tRot);
-		tModel = m4.multiply(m4.multiply(tScaleS,tBasic), tCamera);
+		//tModel = m4.multiply(m4.multiply(tScaleS,tBasic), tCamera);
+		tModel = m4.multiply(tScaleS,tBasic);
 
 		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
+		gl.uniformMatrix4fv(shader.cameraUniform,false,tCamera);
 		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
 		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
 		gl.uniform3fv(shader.colorUniform,colorS);
@@ -156,9 +158,11 @@ function start() {
 	// Second Planet Moon 1
 		tRot = m4.rotationZ(2*Math.PI*time/4);
 		tBasic = m4.multiply(m4.multiply(tTrans4,tRot),tBasic);
-		tModel = m4.multiply(m4.multiply(tScaleSM1,tBasic),tCamera);
+		//tModel = m4.multiply(m4.multiply(tScaleSM1,tBasic),tCamera);
+		tModel = m4.multiply(tScaleSM1,tBasic);
 
 		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
+		gl.uniformMatrix4fv(shader.cameraUniform,false,tCamera);
 		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
 		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
 		gl.uniform3fv(shader.colorUniform,colorSM1);
@@ -168,9 +172,11 @@ function start() {
 	// Second Planet Moon 2
 		tRot = m4.rotationZ(2*Math.PI*time/3);
 		tBasic = m4.multiply(m4.multiply(tTrans5,tRot),tSave);
-		tModel = m4.multiply(m4.multiply(tScaleSM2,tBasic),tCamera);
+		//tModel = m4.multiply(m4.multiply(tScaleSM2,tBasic),tCamera);
+		tModel = m4.multiply(tScaleSM2,tBasic);
 
 		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
+		gl.uniformMatrix4fv(shader.cameraUniform,false,tCamera);
 		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
 		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
 		gl.uniform3fv(shader.colorUniform,colorSM2);
