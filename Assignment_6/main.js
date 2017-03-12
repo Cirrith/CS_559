@@ -25,6 +25,12 @@ function start() {
 	
 	gl.useProgram(shader.program);
 
+	// Sliders
+	var rot1X = document.getElementById("rot1X");
+	var rot1Y = document.getElementById("rot1Y");
+	var rot2X = document.getElementById("rot2X");
+	var rot2Y = document.getElementById("rot2Y");
+	
 	// Objects
 	var sphere = twgl.primitives.createSphereVertices(2, 100, 100);  // Create sphere
 	
@@ -116,9 +122,11 @@ function start() {
 		gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 
 	// First Planet
-		tRot = m4.rotationZ(2*Math.PI*time/10);
+		tRotX = m4.rotationX(Math.PI*(rot1X.value-50)/100);
+		tRotY = m4.rotationY(Math.PI*(rot1Y.value-50)/100);
+		tRotZ = m4.rotationZ(2*Math.PI*time/10);
+		tRot = m4.multiply(m4.multiply(tRotZ,tRotX),tRotY);
 		tBasic = m4.multiply(tTrans1, tRot);
-		//tModel = m4.multiply(m4.multiply(tScaleF, tBasic), tCamera);
 		tModel = m4.multiply(tScaleF, tBasic);
 
 		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
@@ -132,7 +140,6 @@ function start() {
 	// First Planet Moon
 		tRot = m4.rotationZ(2*Math.PI*time/2);
 		tBasic = m4.multiply(m4.multiply(tTrans2,tRot),tBasic);
-		//tModel = m4.multiply(m4.multiply(tScaleFM,tBasic),tCamera);
 		tModel = m4.multiply(tScaleFM,tBasic);
 
 		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
@@ -144,9 +151,11 @@ function start() {
 		gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 
 	// Second Planet
-		tRot = m4.rotationZ(2*Math.PI*time/13);
+		tRotX = m4.rotationX(Math.PI*(rot2X.value-50)/100);
+		tRotY = m4.rotationY(Math.PI*(rot2Y.value-50)/100);
+		tRotZ = m4.rotationZ(2*Math.PI*time/13);
+		tRot = m4.multiply(m4.multiply(tRotZ,tRotX),tRotY);
 		tBasic = m4.multiply(tTrans3,tRot);
-		//tModel = m4.multiply(m4.multiply(tScaleS,tBasic), tCamera);
 		tModel = m4.multiply(tScaleS,tBasic);
 
 		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
@@ -161,7 +170,6 @@ function start() {
 	// Second Planet Moon 1
 		tRot = m4.rotationZ(2*Math.PI*time/4);
 		tBasic = m4.multiply(m4.multiply(tTrans4,tRot),tBasic);
-		//tModel = m4.multiply(m4.multiply(tScaleSM1,tBasic),tCamera);
 		tModel = m4.multiply(tScaleSM1,tBasic);
 
 		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
@@ -175,7 +183,6 @@ function start() {
 	// Second Planet Moon 2
 		tRot = m4.rotationZ(2*Math.PI*time/3);
 		tBasic = m4.multiply(m4.multiply(tTrans5,tRot),tSave);
-		//tModel = m4.multiply(m4.multiply(tScaleSM2,tBasic),tCamera);
 		tModel = m4.multiply(tScaleSM2,tBasic);
 
 		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
