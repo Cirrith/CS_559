@@ -12,6 +12,7 @@
 	<input type="range" id="rot2X" min="0" max="100" /> Planet 2 X
 	<input type="range" id="rot2Y" min="0" max="100" /> Planet 2 Y
 	<br /> Long Live Pluto
+	<script type="text/javascript" src="ship.js"></script>
 	<script type="text/javascript" src="twgl-full.min2.js"> </script>
 	<script type="text/javascript" src="main.js"></script>
 	<script id="vs" type="notjs">
@@ -20,7 +21,6 @@
 		attribute vec3 normal;
 		uniform mat4 normalMatrix;
 		uniform mat4 modelViewMatrix;
-		uniform mat4 cameraViewMatrix;
 		uniform mat4 projectionMatrix;
 		varying vec3 fNormal;
 		varying vec3 fPosition;
@@ -29,7 +29,7 @@
 			fNormal = normalize(mat3(normalMatrix) * normal);
 			vec4 pos = modelViewMatrix * vec4(position, 1.0);
 			fPosition = pos.xyz;
-			gl_Position = (projectionMatrix * cameraViewMatrix) * pos;
+			gl_Position = projectionMatrix * pos;
 		}
 	</script>
 	<script id = "fs" type="notjs">
@@ -51,7 +51,7 @@
 			vec3 ambient = 0.25 * color;
 			vec3 diffuse = 0.9 * max(0.0, dot(n,s)) * lightColor;
 			vec3 specular = 0.5 * pow(max(0.0, dot(n,h)), 0.1) * lightColor; 
-			gl_FragColor = vec4(ambient + diffuse, 1.0);  // Blue Always
+			gl_FragColor = vec4(color,1.0); //vec4(ambient + diffuse, 1.0);  // Blue Always
 		}
 	
 	</script>

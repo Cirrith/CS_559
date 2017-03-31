@@ -34,6 +34,21 @@ function start() {
 	// Objects
 	var sphere = twgl.primitives.createSphereVertices(2, 100, 100);  // Create sphere
 	
+	// Experiment
+	var ship = new Ship();
+	ship.posBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER,ship.posBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER,ship.position,gl.STATIC_DRAW);
+	ship.itemSize = 3;
+	
+	ship.normBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER,ship.normBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER,ship.normal,gl.STATIC_DRAW);
+	
+	ship.indexBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ship.indexBuffer);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,ship.indices,gl.STATIC_DRAW);
+	
 	// Buffers
 		// Position
 	sphere.posBuffer = gl.createBuffer();
@@ -44,10 +59,10 @@ function start() {
 	sphere.normBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER,sphere.normBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER,sphere.normal,gl.STATIC_DRAW);
-		// Indicies
+		// Indices
 	sphere.indexBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphere.indexBuffer);
-	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, sphere.indices, gl.STATIC_DRAW);
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,sphere.indexBuffer);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,sphere.indices,gl.STATIC_DRAW);
 	
 	// Setup Locations
 		// Position Attribute
@@ -62,8 +77,6 @@ function start() {
 	gl.vertexAttribPointer(shader.normAttribute,sphere.itemSize,gl.FLOAT,false,0,0);
 		// Model Transform Uniform
 	shader.transUniform = gl.getUniformLocation(shader.program,"modelViewMatrix");  //Mat4
-		// Camera Uniform
-	shader.cameraUniform = gl.getUniformLocation(shader.program,"cameraViewMatrix");
 		// Projection Uniform
 	shader.projUnifrom = gl.getUniformLocation(shader.program,"projectionMatrix");  // Mat4
 		// Normal Transform Uniform
@@ -104,18 +117,34 @@ function start() {
 	var tRot;
 	var tBasic;
 	var tModel;
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, ship.posBuffer);
+	gl.vertexAttribPointer(shader.posAttribute,ship.itemSize,gl.FLOAT,false,0,0);
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, ship.normBuffer);
+	gl.vertexAttribPointer(shader.normAttribute,ship.itemSize,gl.FLOAT,false,0,0);
+	
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ship.indexBuffer);
 
+	
 	function draw() {
 	// Clear Screen and Depth
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-	// Draw Star
 		eye = [eyeRadius*Math.sin(eyePhi)*Math.cos(eyeTheta),eyeRadius*Math.sin(eyePhi)*Math.sin(eyeTheta),eyeRadius*Math.cos(eyePhi)];
 		tCamera = m4.inverse(m4.lookAt(eye,target,up));
 
+		gl.uniformMatrix4fv(shader.transUniform,false,m4.scaling([0.25,0.25,0.25]));
+		gl.uniformMatrix4fv(shader.projUnifrom,false,m4.multiply(tCamera,tProjection));
+		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tCamera)));
+		gl.uniform3fv(shader.colorUniform,colorC);
+		
+		gl.drawElements(gl.TRIANGLES, ship.indices.length, gl.UNSIGNED_BYTE, 0);
+
+	/*
+	// Draw Star
 		gl.uniformMatrix4fv(shader.transUniform,false,m4.identity());
-		gl.uniformMatrix4fv(shader.cameraUniform,false,tCamera);
-		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
+		gl.uniformMatrix4fv(shader.projUnifrom,false,m4.multiply(tCamera,tProjection));
 		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tCamera)));
 		gl.uniform3fv(shader.colorUniform,colorC);
 
@@ -130,8 +159,7 @@ function start() {
 		tModel = m4.multiply(tScaleF, tBasic);
 
 		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
-		gl.uniformMatrix4fv(shader.cameraUniform,false,tCamera);
-		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
+		gl.uniformMatrix4fv(shader.projUnifrom,false,m4.multiply(tCamera,tProjection));
 		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
 		gl.uniform3fv(shader.colorUniform,colorF);
 		
@@ -143,8 +171,7 @@ function start() {
 		tModel = m4.multiply(tScaleFM,tBasic);
 
 		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
-		gl.uniformMatrix4fv(shader.cameraUniform,false,tCamera);
-		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
+		gl.uniformMatrix4fv(shader.projUnifrom,false,m4.multiply(tCamera,tProjection));
 		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
 		gl.uniform3fv(shader.colorUniform,colorFM);
 
@@ -159,8 +186,7 @@ function start() {
 		tModel = m4.multiply(tScaleS,tBasic);
 
 		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
-		gl.uniformMatrix4fv(shader.cameraUniform,false,tCamera);
-		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
+		gl.uniformMatrix4fv(shader.projUnifrom,false,m4.multiply(tCamera,tProjection));
 		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
 		gl.uniform3fv(shader.colorUniform,colorS);
 
@@ -173,8 +199,7 @@ function start() {
 		tModel = m4.multiply(tScaleSM1,tBasic);
 
 		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
-		gl.uniformMatrix4fv(shader.cameraUniform,false,tCamera);
-		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
+		gl.uniformMatrix4fv(shader.projUnifrom,false,m4.multiply(tCamera,tProjection));
 		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
 		gl.uniform3fv(shader.colorUniform,colorSM1);
 
@@ -186,8 +211,7 @@ function start() {
 		tModel = m4.multiply(tScaleSM2,tBasic);
 
 		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
-		gl.uniformMatrix4fv(shader.cameraUniform,false,tCamera);
-		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
+		gl.uniformMatrix4fv(shader.projUnifrom,false,m4.multiply(tCamera,tProjection));
 		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
 		gl.uniform3fv(shader.colorUniform,colorSM2);
 
@@ -199,13 +223,12 @@ function start() {
 		tModel = m4.multiply(tScalePluto, tBasic);
 
 		gl.uniformMatrix4fv(shader.transUniform,false,tModel);
-		gl.uniformMatrix4fv(shader.cameraUniform,false,tCamera);
-		gl.uniformMatrix4fv(shader.projUnifrom,false,tProjection)
+		gl.uniformMatrix4fv(shader.projUnifrom,false,m4.multiply(tCamera,tProjection));
 		gl.uniformMatrix4fv(shader.normUniform,false,m4.inverse(m4.transpose(tModel)));
 		gl.uniform3fv(shader.colorUniform,colorPluto);
 
 		gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
-
+	*/
 		time += 0.01;
 		window.requestAnimationFrame(draw);
 	}
