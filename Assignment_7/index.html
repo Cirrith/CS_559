@@ -15,65 +15,18 @@
 <script src="grobject.js"></script>
 <script src="ExampleObjects/ground.js"></script>
 
-<!-- This is where we load the objects for the world -->
-<script src="ExampleObjects/simplest.js"></script>
-<script src="ExampleObjects/texturedplane.js"></script>
-<script src="ExampleObjects/cube.js"></script>
+<!-- I am adding the ship data -->
+<script src="Ship/ship_data.js"></script>
+<script src="Ship/ship.js"></script>
 
-<!-- I am adding the helicopter -->
-<script src="Helicopter/helicopter.js"></script>
+<!-- I am adding the sphere data -->
+<script src="Sphere/sphere_data.js"></script>
+<script src="Sphere/sphere.js"></script>
 
 <!-- This gets loaded LAST (actually, it probably doesn't have to) -->
 <script src="graphicstown.js"></script>
 </body>
 
-<!-- all of the shaders get stuck here in the HTML because
-  -- that's the only way I know to load them without either
-  -- sticking them in JavaScript strings, or using a web server
-  -->
-
-<script id="cube-vs" type="notjs">
-// specialized shader for the simple cube
-// we assume that the model matrix works as the normal
-//      matrix - this only is try if the model matrix
-//      it a rotate/translate
-//      (uniform scale is OK since we re-normalize)
-// color is solid
-// simple lighting
-    precision highp float;
-
-    attribute vec3 vpos;
-    attribute vec3 vnormal;
-    varying vec3 outColor;
-
-    uniform mat4 view;
-    uniform mat4 proj;
-    uniform mat4 model;
-    uniform vec3 lightdir;
-    uniform vec3 cubecolor;
-
-
-    void main(void) {
-        gl_Position = proj * view * model * vec4(vpos, 1.0);
-        vec4 normal = normalize(model * vec4(vnormal,0.0));
-        float diffuse = .5 + .5*abs(dot(normal, vec4(lightdir,0.0)));
-        outColor = cubecolor * diffuse;
-    }
-</script>
-<script id="cube-fs" type="notjs">
-// simple shader that does vertex coloring
-//  (e.g. the vertex shader figures the lighting
-// note this is used for more than just the cube
-    precision highp float;
-    varying vec3 outColor;
-    void main(void) {
-        gl_FragColor = vec4(outColor, 1.0);
-    }
-</script>
-
-<!-- Special Ground Plane Shader - makes a boring
-  -- checkerboard
-  -->
 <script id="ground-vs" type="not-js">
     precision highp float;
 
