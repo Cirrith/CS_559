@@ -15,7 +15,7 @@ Requires:
 var grobjects = grobjects || [];
 
 var Sphere = undefined;
-var RSphere = undefined;
+var MSphere = undefined;
 
 (function() {
     "use strict";
@@ -116,6 +116,53 @@ var RSphere = undefined;
 	Sphere.prototype.center = function(drawingState) {
 		return this.position;
 	}
+	
+    MSphere = function MSphere(name, position, size, color, rotation, phase) {
+        Sphere.apply(this,arguments);
+		this.rotation = rotation || 0;
+		this.phase = phase || 0;
+    }
+    MSphere.prototype = Object.create(Sphere.prototype);
+    MSphere.prototype.draw = function(drawingState) {
+        var gl = drawingState.gl;
+		
+		gl.useProgram(this.shaderProgram);
+		
+		// enable the attributes we had set up
+		gl.enableVertexAttribArray(this.posLoc);
+		gl.enableVertexAttribArray(this.normLoc);
+		
+        var scaling = twgl.m4.scaling([this.size,this.size,this.size]);
+		var rotation = twgl.m4.rotationY(this.rotation);
+		var movement = twgl.m4.translation([3*Math.sin(drawingState.realtime/400.+this.phase), 0, 0]);
+		var position = twgl.m4.translation(this.position);
+
+		var modelM = twgl.m4.multiply(scaling, twgl.m4.multiply(position, twgl.m4.multiply(movement, twgl.m4.multiply(rotation,drawingState.view))));
+        
+        // set the uniforms
+		gl.uniformMatrix4fv(this.normMatLoc,false,twgl.m4.inverse(twgl.m4.transpose(modelM)));
+		gl.uniformMatrix4fv(this.viewMatLoc,false,modelM);
+		gl.uniformMatrix4fv(this.projMatLoc,false,drawingState.proj);
+		gl.uniform3fv(this.sunLoc,drawingState.sunDirection);
+		gl.uniform3fv(this.colorLoc,this.color);
+
+		// connect the attributes to the buffer
+		gl.bindBuffer(gl.ARRAY_BUFFER,this.posBuffer);
+		gl.vertexAttribPointer(this.posLoc,sphere_data.itemSize, gl.FLOAT, false, 0, 0);
+		gl.bindBuffer(gl.ARRAY_BUFFER,this.normBuffer);
+		gl.vertexAttribPointer(this.normLoc,sphere_data.itemSize, gl.FLOAT, false, 0, 0);
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+		gl.drawElements(gl.TRIANGLES, sphere_data.index.length,gl.UNSIGNED_SHORT, 0);
+    };
+    MSphere.prototype.center = function(drawingState) {
+        return this.position;
+    }
 })();
 
-grobjects.push(new Sphere('Sphere1', [0,0.5,0], 0.25, [0.,0.,1.0]));
+//grobjects.push(new Sphere('Sphere1', [0,0.5,0], 0.25, [0.,0.,1.0]));
+grobjects.push(new MSphere('MSphere1',[0,0.5,0], 0.1, [0.,0.,1.], 0, 0));
+grobjects.push(new MSphere('MSphere2',[0,0.5,0], 0.1, [1.,0.,0.], Math.PI/6,Math.PI/6));
+grobjects.push(new MSphere('MSphere2',[0,0.5,0], 0.1, [0.,1.,0.], -Math.PI/6,-Math.PI/6));
+grobjects.push(new MSphere('MSphere3',[0,0.5,0], 0.1, [0.,1.,0.], Math.PI/3,Math.PI/3));
+grobjects.push(new MSphere('MSphere4',[0,0.5,0], 0.1, [1.,0.,0.], -Math.PI/3,-Math.PI/3));
+grobjects.push(new MSphere('MSphere5',[0,0.5,0], 0.1, [0.,0.,1.], Math.PI/2,Math.PI/2));
