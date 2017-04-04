@@ -44,19 +44,20 @@ function Sphere_Data() {
 	
 	this.fs = `
 		precision highp float;
+		uniform vec3 color;
 		varying vec3 fNormal;
 		varying vec3 fPosition;
 		varying vec3 sun;
 		
 		void main() {
-			vec3 color = 0.5 * vec3(160./255.,160./255.,160./255.);
 			vec3 n = normalize(fNormal);
 			vec3 v = normalize(-fPosition);
 			vec3 l = normalize(sun);
 			vec3 h = normalize(v+l);
+			vec3 ambient = 0.5 * color;
 			vec3 diffuse = 0.5 * vec3(1.0,1.0,1.0)*max(0.0,dot(n,l));
 			vec3 spec = 0.5 * vec3(1.0,1.0,1.0)*pow(max(0.0,dot(n,h)), 2.);
-			gl_FragColor = vec4(color + diffuse + spec,1.0);
+			gl_FragColor = vec4(ambient + diffuse + spec,1.0);
 		}`;
 		
 	this.position = data.position;
