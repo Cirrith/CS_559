@@ -1,6 +1,6 @@
 /******************************************************************************
 File Name: 
-	ship.js
+	sphere.js
 
 Purpose: 
 	Define and add a sphere object to the graphicstown grobojects list
@@ -15,6 +15,7 @@ Requires:
 var grobjects = grobjects || [];
 
 var Sphere = undefined;
+var RSphere = undefined;
 
 (function() {
     "use strict";

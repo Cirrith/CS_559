@@ -51,8 +51,8 @@ function Ship_Data() {
 			vec3 l = normalize(sun);
 			vec3 h = normalize(v+l);
 			vec3 ambient = 0.5 * color;
-			vec3 diffuse = 0.5 * vec3(1.0,1.0,1.0)*max(0.0,dot(n,l));
-			vec3 spec = 0.5 * vec3(1.0,1.0,1.0)*pow(max(0.0,dot(n,h)), 2.);
+			vec3 diffuse = 0.1 * vec3(1.0,1.0,1.0)*max(0.0,dot(n,l));
+			vec3 spec = 0.2 * vec3(1.0,1.0,1.0)*pow(max(0.0,dot(n,h)), 2.);
 			gl_FragColor = vec4(ambient + diffuse + spec,1.0);
 		}`;
 	
