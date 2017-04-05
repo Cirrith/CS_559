@@ -159,7 +159,10 @@ var MSphere = undefined;
     }
 })();
 
-//grobjects.push(new Sphere('Sphere1', [0,0.5,0], 0.25, [0.,0.,1.0]));
+grobjects.push(new Sphere('Sphere1', [5,0.5,5], 0.25, [1.,0.,0.]));
+grobjects.push(new Sphere('Sphere2', [5,0.5,-5], 0.25, [0.,1.,0.]));
+grobjects.push(new Sphere('Sphere3', [-5,0.5,5], 0.25, [0.,0.,1.]));
+grobjects.push(new Sphere('Sphere4', [-5,0.5,-5], 0.25, [1.,1.,1.]));
 grobjects.push(new MSphere('MSphere1',[0,0.5,0], 0.1, [0.,0.,1.], 0, 0));
 grobjects.push(new MSphere('MSphere2',[0,0.5,0], 0.1, [1.,0.,0.], Math.PI/6,Math.PI/6));
 grobjects.push(new MSphere('MSphere2',[0,0.5,0], 0.1, [0.,1.,0.], -Math.PI/6,-Math.PI/6));
