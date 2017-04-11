@@ -22,9 +22,6 @@ var Ship = undefined;
 	var ship_data = new Ship_Data();
 	var shaderProgam = undefined;
 	
-	var image = new Image();
-	image.src = ship_data.textureSrc;
-	
 	Ship = function(name,position,size,color) {
 		this.name = name;
 		this.position = position || [0,0,0];
@@ -64,13 +61,11 @@ var Ship = undefined;
 		// Setup Attribute Locations
 		this.posLoc = gl.getAttribLocation(this.shaderProgram, "pos");
 		this.normLoc = gl.getAttribLocation(this.shaderProgram, "norm");
-		this.texCordLoc = gl.getAttribLocation(this.shaderProgram, "atexCord");
 		this.normMatLoc = gl.getUniformLocation(this.shaderProgram,"normMat");
 		this.viewMatLoc = gl.getUniformLocation(this.shaderProgram,"viewMat");
 		this.projMatLoc = gl.getUniformLocation(this.shaderProgram,"projMat");
 		this.sunLoc = gl.getUniformLocation(this.shaderProgram,"sunLoc");
 		this.colorLoc = gl.getUniformLocation(this.shaderProgram,"color");
-		this.texLoc = gl.getUniformLocation(this.shaderProgram, "uTexture");
 
 		// Buffer Data
 			// Position
@@ -85,18 +80,6 @@ var Ship = undefined;
 		this.indexBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, ship_data.index, gl.STATIC_DRAW);
-			// Texture Coords
-		this.texCordBuffer = gl.createBuffer();
-		gl.bindBuffer(gl.ARRAY_BUFFER, this.texCordBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, ship_data.textures, gl.STATIC_DRAW);
-			// Texture
-		this.texture= gl.createTexture();
-		gl.bindTexture(gl.TEXTURE_2D, this.texture);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER,  gl.LINEAR);
-		gl.generateMipmap(gl.TEXTURE_2D);
-		gl.bindTexture(gl.TEXTURE_2D, null);
 	}
 	
 	Ship.prototype.draw = function(drawingState) {
@@ -107,10 +90,6 @@ var Ship = undefined;
 		// enable the attributes we had set up
 		gl.enableVertexAttribArray(this.posLoc);
 		gl.enableVertexAttribArray(this.normLoc);
-		gl.enableVertexAttribArray(this.texCordLoc);
-		
-		gl.activeTexture(gl.TEXTURE0);
-		gl.bindTexture(gl.TEXTURE_2D, this.texture);
 		
 		var position = twgl.m4.translation(this.position);
 		var scale = twgl.m4.scaling([this.size,this.size,this.size]);
@@ -122,15 +101,12 @@ var Ship = undefined;
 		gl.uniformMatrix4fv(this.projMatLoc,false,drawingState.proj);
 		gl.uniform3fv(this.sunLoc,drawingState.sunDirection);
 		gl.uniform3fv(this.colorLoc,this.color);
-		gl.uniform1i(this.texLoc, 0);
 		
 		// connect the attributes to the buffer
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.posBuffer);
 		gl.vertexAttribPointer(this.posLoc, ship_data.itemSize, gl.FLOAT, false, 0, 0);
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.normBuffer);
 		gl.vertexAttribPointer(this.normLoc, ship_data.itemSize, gl.FLOAT, false, 0, 0);
-		gl.bindBuffer(gl.ARRAY_BUFFER, this.texCordBuffer);
-		gl.vertexAttribPointer(this.texCordLoc, 2, gl.FLOAT, false, 0, 0);
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 		gl.drawElements(gl.TRIANGLES, ship_data.index.length, gl.UNSIGNED_BYTE, 0);
 	}
