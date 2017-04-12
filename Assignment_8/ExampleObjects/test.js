@@ -50,8 +50,6 @@ var Test = undefined;
 		gl.uniform3fv(this.uniforms.color, [0.85, 0.85, 0.85]);
 		
 		enableLocations(gl, this.attributes);
-		
-		enableLocations(gl, this.attributes);
 			// Position Link
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.mesh.vertexBuffer);
 		gl.vertexAttribPointer(this.attributes.position, 3, gl.FLOAT, false, 0, 0);

@@ -202,8 +202,6 @@ var grobjects = grobjects || [];
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
         gl.uniform1i(this.uniforms.uTexture, 0);
 
-
-
         enableLocations(gl, this.attributes)
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers[0]);
@@ -211,8 +209,6 @@ var grobjects = grobjects || [];
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers[1]);
         gl.vertexAttribPointer(this.attributes.aTexCoord, 2, gl.FLOAT, false, 0, 0);
-
-        
 
         gl.drawArrays(gl.TRIANGLES, 0, 6);
 

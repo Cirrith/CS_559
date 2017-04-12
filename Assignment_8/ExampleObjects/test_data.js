@@ -18,25 +18,25 @@ function Test_Data() {
 	this.itemSize = 3;
 
 	// Store Shaders in template literal form
-		this.vs = `
-		precision highp float;
-		attribute vec3 position;
-		attribute vec3 normal;
-		uniform mat4 normMat;
-		uniform mat4 viewMat;
-		uniform mat4 projMat;
-		uniform vec3 sun;
-		varying vec3 fNormal;
-		varying vec3 fPosition;
-		varying vec3 fsun;
-		
-		void main() {
-			fNormal = normalize(mat3(normMat) * normal);
-			vec4 pos = viewMat * vec4(position, 1.0);
-			fPosition = pos.xyz;
-			fsun = (normMat * vec4(sun,1.0)).xyz;
-			gl_Position = projMat * pos;
-		}`;
+	this.vs = `
+	precision highp float;
+	attribute vec3 position;
+	attribute vec3 normal;
+	uniform mat4 normMat;
+	uniform mat4 viewMat;
+	uniform mat4 projMat;
+	uniform vec3 sun;
+	varying vec3 fNormal;
+	varying vec3 fPosition;
+	varying vec3 fsun;
+	
+	void main() {
+		fNormal = normalize(mat3(normMat) * normal);
+		vec4 pos = viewMat * vec4(position, 1.0);
+		fPosition = pos.xyz;
+		fsun = (normMat * vec4(sun,1.0)).xyz;
+		gl_Position = projMat * pos;
+	}`;
 	
 	this.fs = `
 		precision highp float;
