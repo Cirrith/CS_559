@@ -3,7 +3,7 @@ File Name:
 	sphere.js
 
 Purpose: 
-	Define and add a sphere object to the graphicstown grobojects list
+	Define and add a sphere/ mSPhere objects to the graphicstown grobojects list
 
 Requires:
 	name
