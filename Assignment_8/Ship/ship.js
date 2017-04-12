@@ -21,8 +21,11 @@ var Ship = undefined;
 
 	var data = new Ship_Data();
 	
-	var image = new Image();
-	image.src = data.texture;
+	var texture = new Image();
+	texture.src = data.texture;
+	
+	var sTexture = new Image();
+	sTexture.src = data.specTexture;
 	
 	Ship = function(name,position,size,color) {
 		this.name = name;
@@ -38,9 +41,10 @@ var Ship = undefined;
 		OBJ.initMeshBuffers(gl, this.mesh);
 		this.program = createProgram(gl, data);
 		this.attributes = findAttribLocations(gl, this.program, ['position', 'normal', 'texCoord']);
-		this.uniforms = findUniformLocations(gl, this.program, ['normMat', 'viewMat', 'projMat', 'color', 'sun', 'texture']);
+		this.uniforms = findUniformLocations(gl, this.program, ['normMat', 'viewMat', 'projMat', 'color', 'sun', 'texture', 'sTexture']);
 		
-		this.texture = createGLTexture(gl, image, true);
+		this.texture = createGLTexture(gl, texture, true);
+		this.sTexture = createGLTexture(gl, sTexture, true);
 	}
 	
 	Ship.prototype.draw = function(drawingState) {
@@ -61,6 +65,10 @@ var Ship = undefined;
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, this.texture);
 		gl.uniform1i(this.uniforms.texture, 0);
+		
+		gl.activeTexture(gl.TEXTURE1);
+		gl.bindTexture(gl.TEXTURE_2D, this.sTexture);
+		gl.uniform1i(this.uniforms.sTexture, 1);
 		
 		enableLocations(gl, this.attributes);
 			// Position Link

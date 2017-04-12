@@ -3,7 +3,7 @@ File Name:
 	torus.js
 
 Purpose: 
-	Define and add a sphere object to the graphicstown grobojects list
+	Define and add a torus object to the graphicstown grobojects list
 
 Requires:
 	name
@@ -117,4 +117,4 @@ var Torus = undefined;
 	}
 })();
 
-grobjects.push(new Torus('Torus1', [0,0.5,0], 0.25, [0.,0.,1.0]));
+grobjects.push(new Torus('torus1', [0,0.5,0], 0.25, [0.,0.,1.0]));

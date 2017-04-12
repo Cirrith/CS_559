@@ -1,9 +1,9 @@
 /******************************************************************************
 File Name: 
-	ship.js
+	pyramid.js
 
 Purpose: 
-	Define and add a ship object to the graphicstown grobojects list
+	Define and add a pyramid object to the graphicstown grobojects list
 
 Requires:
 	name
@@ -14,32 +14,32 @@ Requires:
 
 var grobjects = grobjects || [];
 
-var Test = undefined;
+var Pyramid = undefined;
 
 (function() {
 	"use strict";
 	
-	var data = new Test_Data();
-	var shaderProgram = undefined;
+	var data = new Pyramid_Data();
 	
-	Test = function(name, position, size, color) {
-		this.name = name || "Tester";
+	Pyramid = function(name,position,size,color) {
+		this.name = name || "pyramid";
 		this.position = position || [0,0,0];
 		this.size = size || 1.0;
-		this.color = color || [0.85, 0.85, 0.85];
-	};
-	
-	Test.prototype.init = function(drawingState) {
-		var gl = drawingState.gl;
-
-		this.mesh = new OBJ.Mesh(data.source);
-		OBJ.initMeshBuffers(gl, this.mesh);
-		this.program = createProgram(gl, data);
-		this.attributes = findAttribLocations(gl, this.program, ['position', 'normal']);
-		this.uniforms = findUniformLocations(gl, this.program, ['normMat', 'viewMat', 'projMat', 'color', 'sun']);
+		this.color = color || [0.85,0.85,0.85];
 	}
 	
-	Test.prototype.draw = function(drawingState) {
+	Pyramid.prototype.init = function(drawingState) {
+		var gl = drawingState.gl;
+
+		this.buffers = [];
+		this.buffers['vertexBuffer'] = createGLBuffer(gl, gl.ARRAY_BUFFER, data.vertex, gl.STATIC_DRAW)
+		this.buffers['indexBuffer'] = createGLBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, data.index, gl.STATIC_DRAW);
+		this.program = createProgram(gl, data);
+		this.attributes = findAttribLocations(gl, this.program, ['position']);
+		this.uniforms = findUniformLocations(gl, this.program, ['viewMat', 'projMat', 'color']);
+	}
+	
+	Pyramid.prototype.draw = function(drawingState) {
 		var gl = drawingState.gl;
 		
 		gl.useProgram(this.program);
@@ -51,27 +51,23 @@ var Test = undefined;
 		gl.uniformMatrix4fv(this.uniforms.normMat, false, twgl.m4.inverse(twgl.m4.transpose(modelM)));  // Normal Matrix
 		gl.uniformMatrix4fv(this.uniforms.viewMat, false, modelM);  // View Matrix
 		gl.uniformMatrix4fv(this.uniforms.projMat, false, drawingState.proj);  // Projection Matrix
-		gl.uniform3fv(this.uniforms.sun, drawingState.sunDirection);  // Sun
 		gl.uniform3fv(this.uniforms.color, this.color);
 		
 		enableLocations(gl, this.attributes);
 			// Position Link
-		gl.bindBuffer(gl.ARRAY_BUFFER, this.mesh.vertexBuffer);
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.vertexBuffer);
 		gl.vertexAttribPointer(this.attributes.position, 3, gl.FLOAT, false, 0, 0);
-			// Normal Link
-		gl.bindBuffer(gl.ARRAY_BUFFER, this.mesh.normalBuffer);
-		gl.vertexAttribPointer(this.attributes.normal, 3, gl.FLOAT, false, 0, 0);
 			// Index Link
-		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.mesh.indexBuffer);
-		gl.drawElements(gl.TRIANGLES, this.mesh.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers.indexBuffer);
+		gl.drawElements(gl.TRIANGLES, data.index.length, gl.UNSIGNED_SHORT, 0);
 		
 		disableLocations(gl, this.attributes);
 	}
 	
-	Test.prototype.center = function(drawingState) {
+	Pyramid.prototype.center = function(drawingState) {
 		return this.position;
 	}
 
 })();
 
-grobjects.push(new Test());
+grobjects.push(new Pyramid("pyramid1", [0,0.5,-5], 0.5, [0.,0.,1.]));

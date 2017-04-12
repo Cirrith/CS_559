@@ -1,9 +1,9 @@
 /******************************************************************************
 File Name:
-	sphere_data.js
+	toris_data.js
 
 Purpose: 
-	Define the information to build and shade a sphere object
+	Define the information to build and shade a torus object
 
 Contains:
 	itemSize: 3

@@ -53,7 +53,6 @@ var enableLocations = function (gl, attributes) {
 	}
 }
 
-//always a good idea to clean up your attrib location bindings when done. You wont regret it later. 
 var disableLocations = function (gl, attributes) {
 	for(var key in attributes){
 		var location = attributes[key];
@@ -73,4 +72,11 @@ var createGLTexture = function (gl, image, flipY) {
 	gl.generateMipmap(gl.TEXTURE_2D);
 	gl.bindTexture(gl.TEXTURE_2D, null);
 	return texture;
+}
+
+var createGLBuffer = function (gl, target, data, usage) {
+	var buffer = gl.createBuffer();
+	gl.bindBuffer(target, buffer);
+	gl.bufferData(target, data, usage);
+	return buffer;
 }
