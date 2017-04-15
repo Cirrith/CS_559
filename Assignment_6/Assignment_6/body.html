@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title> Assignment 6 </title>
+	<meta "Assignment 6" />
+</head>
+<body>
+	<canvas id="canvas" width="1400" height="800" style="border:1px solid black;"></canvas>
+	Use Mouse! <br />
+	<input type="range" id="rot1X" min="0" max="100" /> Planet 1 X
+	<input type="range" id="rot1Y" min="0" max="100" /> Planet 1 Y
+	<input type="range" id="rot2X" min="0" max="100" /> Planet 2 X
+	<input type="range" id="rot2Y" min="0" max="100" /> Planet 2 Y
+	<br /> Long Live Pluto
+	<script type="text/javascript" src="twgl-full.min2.js"> </script>
+	<script type="text/javascript" src="main.js"></script>
+	<script id="vs" type="notjs">
+		precision highp float;
+		attribute vec3 position;
+		attribute vec3 normal;
+		uniform mat4 normalMatrix;
+		uniform mat4 modelViewMatrix;
+		uniform mat4 cameraViewMatrix;
+		uniform mat4 projectionMatrix;
+		varying vec3 fNormal;
+		varying vec3 fPosition;
+		
+		void main() {
+			fNormal = normalize(mat3(normalMatrix) * normal);
+			vec4 pos = modelViewMatrix * vec4(position, 1.0);
+			fPosition = pos.xyz;
+			gl_Position = (projectionMatrix * cameraViewMatrix) * pos;
+		}
+	</script>
+	<script id = "fs" type="notjs">
+		precision highp float;
+		varying vec3 fNormal;
+		varying vec3 fPosition;
+		uniform vec3 color;
+		
+		void main() {
+			vec3 s = normalize(-fPosition);
+			vec3 v = normalize(-fPosition);
+			vec3 n = normalize(fNormal);
+			vec3 h = normalize(v+s);
+			vec3 lightColor = vec3(1.0,1.0,1.0);
+			if(length(fPosition) < 2.5) {  // Don't do sun
+				gl_FragColor = vec4(color, 1.0);
+				return;
+			}
+			vec3 ambient = 0.25 * color;
+			vec3 diffuse = 0.9 * max(0.0, dot(n,s)) * lightColor;
+			vec3 specular = 0.5 * pow(max(0.0, dot(n,h)), 0.1) * lightColor; 
+			gl_FragColor = vec4(ambient + diffuse, 1.0);  // Blue Always
+		}
+	
+	</script>
+</body>
+</html>
