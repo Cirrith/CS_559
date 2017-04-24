@@ -27,6 +27,9 @@ var Ship = undefined;
 	var sTexture = new Image();
 	sTexture.src = data.specTexture;
 	
+	var bTexture = new Image();
+	bTexture.src = data.bumpTexture;
+	
 	Ship = function(name,position,size,color) {
 		this.name = name;
 		this.position = position || [0,0,0];
@@ -41,10 +44,11 @@ var Ship = undefined;
 		OBJ.initMeshBuffers(gl, this.mesh);
 		this.program = createProgram(gl, data);
 		this.attributes = findAttribLocations(gl, this.program, ['position', 'normal', 'texCoord']);
-		this.uniforms = findUniformLocations(gl, this.program, ['normMat', 'viewMat', 'projMat', 'color', 'sun', 'texture', 'sTexture']);
+		this.uniforms = findUniformLocations(gl, this.program, ['normMat', 'viewMat', 'projMat', 'color', 'sun', 'texture', 'sTexture', 'bTexture']);
 		
 		this.texture = createGLTexture(gl, texture, true);
 		this.sTexture = createGLTexture(gl, sTexture, true);
+		this.bTexture = createGLTexture(gl, bTexture, true);
 	}
 	
 	Ship.prototype.draw = function(drawingState) {
@@ -70,6 +74,10 @@ var Ship = undefined;
 		gl.bindTexture(gl.TEXTURE_2D, this.sTexture);
 		gl.uniform1i(this.uniforms.sTexture, 1);
 		
+		gl.activeTexture(gl.TEXTURE2);
+		gl.bindTexture(gl.TEXTURE_2D, this.bTexture);
+		gl.uniform1i(this.uniforms.bTexture, 2);
+		
 		enableLocations(gl, this.attributes);
 			// Position Link
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.mesh.vertexBuffer);
@@ -92,4 +100,4 @@ var Ship = undefined;
 	}
 })();
 
-grobjects.push(new Ship("Shipey McShipFace", [5,.5,0], 0.1, [0.,0.,1.]));
+grobjects.push(new Ship("Shipey McShipFace", [5,1,0], 0.1, [0.,0.,1.]));
