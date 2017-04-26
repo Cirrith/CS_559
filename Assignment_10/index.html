@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Graphics town framework code by Mike Gleicher
+  -- written October, 2015
+  -->
+<head>
+    <meta charset="UTF-8">
+    <title>GraphicsTown JS 2015!</title>
+</head>
+<body>
+<!-- load this stuff first -->
+<script src="Libraries/twgl-full.js"></script>
+<script src="Libraries/webgl-obj-loader.js"></script>
+<script src="Libraries/helper.js"></script>
+<script src="Libraries/panel.js"></script>
+<script src="Libraries/arcball.js"></script>
+<script src="grobject.js"></script>
+
+<!-- <script src="ExampleObjects/test_data.js"></script>
+<!-- <script src="ExampleObjects/test.js"></script>
+
+<!-- I am adding the pyramid data -->
+<script src="Pyramid/pyramid_data.js"></script>
+<script src="Pyramid/pyramid.js"></script>
+
+<!-- I am adding the tree data -->
+<script src="Tree/tree_data.js"></script>
+<script src="Tree/tree.js"></script>
+
+<!-- I am adding the star data -->
+<script src="Star/star_data.js"></script>
+<script src="Star/star.js"></script>
+
+<!-- I am adding the sky data -->
+<script src="Box/box.js"></script>
+
+<!-- I am adding the ship data -->
+<script src="Ship/ship_data.js"></script>
+<script src="Ship/ship.js"></script>
+
+<!-- I am adding the ship data -->
+<script src="Ship2/ship2_data.js"></script>
+<script src="Ship2/ship2.js"></script>
+
+<!-- I am adding the sphere data -->
+<script src="Sphere/sphere_data.js"></script>
+<script src="Sphere/sphere.js"></script>
+
+<!-- I am adding the torus data -->
+<script src="Torus/torus_data.js"></script>
+<script src="Torus/torus.js"></script>
+
+<!-- This gets loaded LAST (actually, it probably doesn't have to) -->
+<script src="graphicstown.js"></script>
+</body>
+
+<script id="ground-vs" type="not-js">
+    precision highp float;
+
+    attribute vec3 vpos;
+    varying vec3 outPos;
+
+    uniform mat4 view;
+    uniform mat4 proj;
+
+    void main(void) {
+        gl_Position = proj * view * vec4(vpos, 1.0);
+        outPos = vpos;
+    }
+</script>
+<script id="ground-fs" type="notjs">
+    // note this is used for more than just the cube
+    precision highp float;
+    varying vec3 outPos;
+    void main(void) {
+        float xs = step(1.0,mod(outPos.x,2.0));
+        float zs = step(1.0,mod(outPos.z,2.0));
+        float ss = (xs>.5) ? zs : 1.0-zs;
+        gl_FragColor = mix(vec4(0.5,0.5,0.5,1),
+                           vec4(0.3,0.5,0.4,1),
+                           ss
+                           );
+
+    }
+</script>
+</html>
