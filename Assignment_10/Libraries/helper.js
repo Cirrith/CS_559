@@ -80,3 +80,67 @@ var createGLBuffer = function (gl, target, data, usage) {
 	gl.bufferData(target, data, usage);
 	return buffer;
 }
+
+var Bezier = function(t) {
+	return [
+	(1-t)*(1-t)*(1-t),
+	3*t*(1-t)*(1-t),
+	3*t*t*(1-t),
+	t*t*t
+	];
+}
+
+var BezierDerivative = function(t) {
+	return [
+	-3*(1-t)*(1-t),
+	3*(1-3*t)*(1-t),
+	3*t*(2-3*t),
+	3*t*t
+	];
+}
+
+var Hermite = function(t) {
+	return [
+		2*t*t*t-3*t*t+1,
+		t*t*t-2*t*t+t,
+		-2*t*t*t+3*t*t,
+		t*t*t-t*t
+	];
+}
+
+var HermiteDerivative = function(t) {
+	return [
+		6*t*t-6*t,
+		3*t*t-4*t+1,
+		-6*t*t+6*t,
+		3*t*t-2*t
+	];
+}
+
+function Cubic(basis,P,t){
+	var b = basis(t);
+	var result=twgl.v3.mulScalar(P[0],b[0]);
+	twgl.v3.add(twgl.v3.mulScalar(P[1],b[1]),result,result);
+	twgl.v3.add(twgl.v3.mulScalar(P[2],b[2]),result,result);
+	twgl.v3.add(twgl.v3.mulScalar(P[3],b[3]),result,result);
+	return result;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

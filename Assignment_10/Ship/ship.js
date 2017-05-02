@@ -56,7 +56,8 @@ var Ship = undefined;
 		
 		gl.useProgram(this.program);
 		
-		var position = twgl.m4.translation(this.position);
+		//console.log(drawingState.realtime);
+		var position = twgl.m4.multiply(twgl.m4.rotationY(-Math.PI/2),data.curve(drawingState.realtime/3000 % 1));
 		var scale = twgl.m4.scaling([this.size,this.size,this.size]);
 		var modelM = twgl.m4.multiply(twgl.m4.multiply(scale,position),drawingState.view);
 		

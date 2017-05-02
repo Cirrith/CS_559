@@ -14,12 +14,12 @@ Requires:
 
 var grobjects = grobjects || [];
 
-var Ship2 = undefined;
+var Ship3 = undefined;
 
 (function() {
     "use strict";
 
-	var data = new Ship2_Data();
+	var data = new Ship3_Data();
 	
 	var texture = new Image();
 	texture.src = data.texture;
@@ -30,14 +30,14 @@ var Ship2 = undefined;
 	var bTexture = new Image();
 	bTexture.src = data.bumpTexture;
 	
-	Ship2 = function(name,position,size,color) {
+	Ship3 = function(name,position,size,color) {
 		this.name = name;
 		this.position = position || [0,0,0];
 		this.size = size || 1.0;
 		this.color = color || [0.85,0.85,0.85];
 	}
 	
-	Ship2.prototype.init = function(drawingState) {
+	Ship3.prototype.init = function(drawingState) {
 		var gl = drawingState.gl;
 
 		this.mesh = new OBJ.Mesh(data.source);
@@ -51,12 +51,12 @@ var Ship2 = undefined;
 		this.bTexture = createGLTexture(gl, bTexture, true);
 	}
 	
-	Ship2.prototype.draw = function(drawingState) {
+	Ship3.prototype.draw = function(drawingState) {
 		var gl = drawingState.gl;
 		
 		gl.useProgram(this.program);
 		
-		var position = twgl.m4.multiply(twgl.m4.rotationY(Math.PI),data.curve(drawingState.realtime/3000 % 1));
+		var position = twgl.m4.multiply(twgl.m4.rotationY(Math.PI/2),data.curve(drawingState.realtime/6000 % 1));
 		
 		var scale = twgl.m4.scaling([this.size,this.size,this.size]);
 		var modelM = twgl.m4.multiply(twgl.m4.multiply(scale,position),drawingState.view);
@@ -96,9 +96,9 @@ var Ship2 = undefined;
 		disableLocations(gl, this.attributes);
 	}
 	
-	Ship2.prototype.center = function(drawingState) {
+	Ship3.prototype.center = function(drawingState) {
 		return this.position;
 	}
 })();
 
-grobjects.push(new Ship2("Ship2", [-5,3,-5], 1., [0.,0.,1.]));
+grobjects.push(new Ship3("Ship3", [-5,3,-5], .1, [0.,0.,1.]));

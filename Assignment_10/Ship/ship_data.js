@@ -17,29 +17,56 @@ function Ship_Data() {
 
 	this.itemSize = 3;
 
+	this.curve = function(t) {
+		var p0=[0,1.5,0];
+		var p1=[10,2.5,0];
+		var p2=[10,4.5,10];
+		var p3=[0,6.5,10];
+		var P1 = [p0,p1,p2,p3]; // All the control points
+
+		var p4 = [0,6.5,10];
+		var p5 = [-10,4.5,10];
+		var p6 = [-10,2.5,0];
+		var p7 = [0,1.5,0];
+		var P2 = [p4,p5,p6,p7];
+
+		var Tmodel_trans = undefined;
+		var Tmodel_rot = undefined;
+
+		if(t <= 0.5) {
+			Tmodel_trans=twgl.m4.translation(Cubic(Bezier,P1,t*2));
+			Tmodel_rot=twgl.m4.lookAt([0,0,0],Cubic(BezierDerivative,P1,t*2),[0,1,0]);
+		} else {
+			Tmodel_trans=twgl.m4.translation(Cubic(Bezier,P2,(t-.5)*2));
+			Tmodel_rot=twgl.m4.lookAt([0,0,0],Cubic(BezierDerivative,P2,(t-.5)*2),[0,1,0]);
+		}
+		
+		return twgl.m4.multiply(Tmodel_rot,Tmodel_trans);
+	}
+
 	// Store Shaders in template literal form
-this.vs = `
-	precision highp float;
-	attribute vec3 position;
-	attribute vec3 normal;
-	attribute vec2 texCoord;
-	uniform mat4 normMat;
-	uniform mat4 viewMat;
-	uniform mat4 projMat;
-	uniform vec3 sun;
-	varying vec3 fNormal;
-	varying vec3 fPosition;
-	varying vec3 fSun;
-	varying vec2 fTexCoord;
-	
-	void main() {
-		fNormal = normalize(normal * mat3(normMat));
-		vec4 pos = viewMat * vec4(position, 1.0);
-		fPosition = pos.xyz;
-		fTexCoord = texCoord;
-		fSun = (normMat * vec4(sun,1.0)).xyz;
-		gl_Position = projMat * pos;
-	}`;
+	this.vs = `
+		precision highp float;
+		attribute vec3 position;
+		attribute vec3 normal;
+		attribute vec2 texCoord;
+		uniform mat4 normMat;
+		uniform mat4 viewMat;
+		uniform mat4 projMat;
+		uniform vec3 sun;
+		varying vec3 fNormal;
+		varying vec3 fPosition;
+		varying vec3 fSun;
+		varying vec2 fTexCoord;
+		
+		void main() {
+			fNormal = normalize(normal * mat3(normMat));
+			vec4 pos = viewMat * vec4(position, 1.0);
+			fPosition = pos.xyz;
+			fTexCoord = texCoord;
+			fSun = (normMat * vec4(sun,1.0)).xyz;
+			gl_Position = projMat * pos;
+		}`;
 	
 	this.fs = `
 		precision highp float;

@@ -16,30 +16,58 @@ Contains:
 function Ship2_Data() {
 
 	this.itemSize = 3;
-
-	// Store Shaders in template literal form
-this.vs = `
-	precision highp float;
-	attribute vec3 position;
-	attribute vec3 normal;
-	attribute vec2 texCoord;
-	uniform mat4 normMat;
-	uniform mat4 viewMat;
-	uniform mat4 projMat;
-	uniform vec3 sun;
-	varying vec3 fNormal;
-	varying vec3 fPosition;
-	varying vec3 fSun;
-	varying vec2 fTexCoord;
 	
-	void main() {
-		fNormal = normalize(normal * mat3(normMat));
-		vec4 pos = viewMat * vec4(position, 1.0);
-		fPosition = pos.xyz;
-		fTexCoord = texCoord;
-		fSun = (normMat * vec4(sun,1.0)).xyz;
-		gl_Position = projMat * pos;
-	}`;
+	this.curve = function(t) {
+		var p0=[5,3,0];
+		var d0=[0,0,15];
+		var p1=[-5,3,0];
+		var d1=[0,0,-15];
+	
+		var P1 = [p0,d0,p1,d1];
+	
+		var p2=[-5,3,0];
+		var d2=[0,0,-15];
+		var p3=[5,3,0];
+		var d3=[0,0,15];
+		
+		var P2 = [p2,d2,p3,d3];
+	
+		var Tmodel_trans = undefined;
+		var Tmodel_rot = undefined;
+
+		if(t <= .5) {
+			Tmodel_trans=twgl.m4.translation(Cubic(Hermite,P1,t*2));
+			Tmodel_rot=twgl.m4.lookAt([0,0,0],Cubic(HermiteDerivative,P1,t*2),[0,1,0]);
+		} else {
+			Tmodel_trans=twgl.m4.translation(Cubic(Hermite,P2,(t-.5)*2));
+			Tmodel_rot=twgl.m4.lookAt([0,0,0],Cubic(HermiteDerivative,P2,(t-.5)*2),[0,1,0]);
+		}
+		
+		return twgl.m4.multiply(Tmodel_rot,Tmodel_trans);
+	}
+	// Store Shaders in template literal form
+	this.vs = `
+		precision highp float;
+		attribute vec3 position;
+		attribute vec3 normal;
+		attribute vec2 texCoord;
+		uniform mat4 normMat;
+		uniform mat4 viewMat;
+		uniform mat4 projMat;
+		uniform vec3 sun;
+		varying vec3 fNormal;
+		varying vec3 fPosition;
+		varying vec3 fSun;
+		varying vec2 fTexCoord;
+		
+		void main() {
+			fNormal = normalize(normal * mat3(normMat));
+			vec4 pos = viewMat * vec4(position, 1.0);
+			fPosition = pos.xyz;
+			fTexCoord = texCoord;
+			fSun = (normMat * vec4(sun,1.0)).xyz;
+			gl_Position = projMat * pos;
+		}`;
 	
 	this.fs = `
 		precision highp float;
